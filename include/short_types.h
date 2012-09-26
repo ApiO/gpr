@@ -1,5 +1,5 @@
-#ifndef SHORT_TYPES_H
-#define SHORT_TYPES_H
+#ifndef GPCORE_SHORT_TYPES_H
+#define GPCORE_SHORT_TYPES_H
 
 #include "pstdint.h"
 
@@ -71,4 +71,4 @@ static F64 swapF64(F64 value)
   return u.m_asF64;
 }
 
-#endif // SHORT_TYPES_H
+#endif // GPCORE_SHORT_TYPES_H
