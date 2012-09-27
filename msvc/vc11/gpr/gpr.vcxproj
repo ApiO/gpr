@@ -11,21 +11,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\assert.h" />
-    <ClInclude Include="include\containers.h" />
-    <ClInclude Include="include\memory.h" />
+    <ClInclude Include="include\gpr_assert.h" />
+    <ClInclude Include="include\gpr_containers.h" />
+    <ClInclude Include="include\gpr_memory.h" />
     <ClInclude Include="include\pstdint.h" />
     <ClInclude Include="include\short_types.h" />
+    <ClInclude Include="include\gpr_task.h" />
     <ClInclude Include="src\malloc.h" />
     <ClInclude Include="src\tinycthread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\malloc.c" />
+    <ClCompile Include="src\gpr_memory.c" />
     <ClCompile Include="src\tinycthread.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{32A4B122-4B41-409B-99AE-0B813C9F420A}</ProjectGuid>
-    <RootNamespace>gpcore</RootNamespace>
+    <RootNamespace>gpr</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

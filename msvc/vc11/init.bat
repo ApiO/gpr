@@ -1,5 +1,5 @@
-if exist gpcore\include rd /s /q gpcore\include
-if exist gpcore\src     rd /s /q gpcore\src
+if exist gpr\include rd /s /q gpr\include
+if exist gpr\src     rd /s /q gpr\src
 
-mklink /j gpcore\include ..\..\include
-mklink /j gpcore\src     ..\..\src
+mklink /j gpr\include ..\..\include
+mklink /j gpr\src     ..\..\src
