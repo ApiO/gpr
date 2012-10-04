@@ -20,6 +20,9 @@
     <ClCompile Include="src\malloc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gpr_containers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\gpr_memory.c">
       <Filter>Source Files</Filter>
     </ClCompile>

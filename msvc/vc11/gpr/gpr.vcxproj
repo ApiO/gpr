@@ -21,8 +21,9 @@
     <ClInclude Include="src\tinycthread.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\malloc.c" />
+    <ClCompile Include="src\gpr_containers.c" />
     <ClCompile Include="src\gpr_memory.c" />
+    <ClCompile Include="src\malloc.c" />
     <ClCompile Include="src\tinycthread.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -59,7 +60,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <CompileAs>CompileAsC</CompileAs>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -72,7 +74,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <CompileAs>CompileAsC</CompileAs>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

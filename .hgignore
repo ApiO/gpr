@@ -1,0 +1,10 @@
+syntax: glob
+*.sdf
+*.suo
+*.vcxproj.user
+*.opensdf
+msvc/vc11/gpr/src/
+msvc/vc11/gpr/include/
+msvc/vc11/Debug/
+msvc/vc11/gpr/Debug/
+msvc/vc11/gpr/Release/
