@@ -7,5 +7,7 @@
 #define GPR_ASSERT_FAILURE_MSG(message)    assert(0 && message)
 #define GPR_ASSERT(condition)              assert(condition)
 #define GPR_ASSERT_MSG(condition, message) assert(condition && message)
+#define GPR_ASSERT_ALLOC(ptr)              assert(ptr != NULL && \
+                                                  "allocation failed")
 
 #endif // GPR_ASSERT_H

@@ -24,6 +24,7 @@
     <ClCompile Include="src\gpr_containers.c" />
     <ClCompile Include="src\gpr_memory.c" />
     <ClCompile Include="src\malloc.c" />
+    <ClCompile Include="src\test.c" />
     <ClCompile Include="src\tinycthread.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -32,7 +33,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
