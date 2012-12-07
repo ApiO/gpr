@@ -1,7 +1,7 @@
 #ifndef SHORT_TYPES_H
 #define SHORT_TYPES_H
 
-#include "pstdint.h"
+#include <stdint.h>
 
 typedef size_t   SZ;
 

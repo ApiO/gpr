@@ -14,16 +14,12 @@
     <ClInclude Include="include\gpr_assert.h" />
     <ClInclude Include="include\gpr_containers.h" />
     <ClInclude Include="include\gpr_memory.h" />
-    <ClInclude Include="include\pstdint.h" />
     <ClInclude Include="include\short_types.h" />
-    <ClInclude Include="include\gpr_task.h" />
-    <ClInclude Include="src\malloc.h" />
     <ClInclude Include="src\tinycthread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gpr_containers.c" />
     <ClCompile Include="src\gpr_memory.c" />
-    <ClCompile Include="src\malloc.c" />
     <ClCompile Include="src\test.c" />
     <ClCompile Include="src\tinycthread.c" />
   </ItemGroup>
@@ -63,6 +59,7 @@
       <CompileAs>CompileAsC</CompileAs>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>include;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -77,6 +74,8 @@
       <CompileAs>CompileAsC</CompileAs>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;USE_DL_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>include;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

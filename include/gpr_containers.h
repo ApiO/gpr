@@ -9,7 +9,7 @@
 // -------------------------------------------------------------------------
 // Id Lookup Table Container 
 // -------------------------------------------------------------------------
-// More information about the implementation at
+// Design & Implementation inspired from
 // http://www.altdevblogaday.com/2011/09/23/managing-decoupling-part-4-the-id-lookup-table/
 // -------------------------------------------------------------------------
 
@@ -114,7 +114,7 @@ void gpr_##type##_idlut_remove(gpr_##type##_idlut_t *table, U32 id)         \
   table->indices[item->id & GPR_INDEX_MASK].index = in->index;              \
                                                                             \
   in->index = USHRT_MAX;                                                    \
-	table->freelist_enqueue = id & GPR_INDEX_MASK;                            \
+	table->freelist_enqueue = id & GPR_INDEX_MASK;                          \
   if(table->freelist_dequeue == table->max_items)                           \
     table->freelist_dequeue = table->freelist_enqueue;                      \
 }                                                                           \

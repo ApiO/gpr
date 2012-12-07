@@ -17,9 +17,6 @@
     <ClCompile Include="src\tinycthread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\malloc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\gpr_containers.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,13 +28,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\pstdint.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\tinycthread.h">
-      <Filter>Private Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\malloc.h">
       <Filter>Private Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gpr_containers.h">
@@ -47,9 +38,6 @@
       <Filter>Public Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gpr_memory.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_task.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\short_types.h">
