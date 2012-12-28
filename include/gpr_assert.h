@@ -3,11 +3,11 @@
 
 #include <assert.h>
 
-#define GPR_ASSERT_FAILURE()               assert(0)
-#define GPR_ASSERT_FAILURE_MSG(message)    assert(0 && message)
-#define GPR_ASSERT(condition)              assert(condition)
-#define GPR_ASSERT_MSG(condition, message) assert(condition && message)
-#define GPR_ASSERT_ALLOC(ptr)              assert(ptr != NULL && \
+#define gpr_assert_failure()               assert(0)
+#define gpr_assert_failure_msg(message)    assert(0 && message)
+#define gpr_assert(condition)              assert(condition)
+#define gpr_assert_msg(condition, message) assert(condition && message)
+#define gpr_assert_alloc(ptr)              assert(ptr != NULL && \
                                                   "allocation failed")
 
 #endif // GPR_ASSERT_H

@@ -4,7 +4,7 @@
 //#include "memory.h"
 #include <stdlib.h> 
 #include "gpr_assert.h"
-#include "short_types.h"
+#include "gpr_types.h"
 
 // -------------------------------------------------------------------------
 // Id Lookup Table Container 
@@ -47,10 +47,10 @@ void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table, U16 max_items)    \
 {                                                                           \
   table->items = (gpr_##type##_idlut_item*)                                 \
                  malloc(max_items * sizeof(gpr_##type##_idlut_item));       \
-  GPR_ASSERT_ALLOC(table->items);                                           \
+  gpr_assert_alloc(table->items);                                           \
                                                                             \
   table->indices = (gpr_index_t*)malloc(max_items * sizeof(gpr_index_t));   \
-  GPR_ASSERT_ALLOC(table->indices);                                         \
+  gpr_assert_alloc(table->indices);                                         \
                                                                             \
   table->max_items        = max_items;                                      \
   table->num_items        = 0;                                              \
@@ -114,7 +114,7 @@ void gpr_##type##_idlut_remove(gpr_##type##_idlut_t *table, U32 id)         \
   table->indices[item->id & GPR_INDEX_MASK].index = in->index;              \
                                                                             \
   in->index = USHRT_MAX;                                                    \
-	table->freelist_enqueue = id & GPR_INDEX_MASK;                          \
+	table->freelist_enqueue = id & GPR_INDEX_MASK;                            \
   if(table->freelist_dequeue == table->max_items)                           \
     table->freelist_dequeue = table->freelist_enqueue;                      \
 }                                                                           \

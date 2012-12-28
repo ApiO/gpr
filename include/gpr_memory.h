@@ -1,32 +1,26 @@
 #ifndef GPR_MEMORY_H
 #define GPR_MEMORY_H
 
-#include "short_types.h"
+#include "gpr_types.h"
 
-#define DEFAULT_ALIGN 4
-#define SIZE_NOT_TRACKED = 0xffffffffu
+#define GPR_DEFAULT_ALIGN 4
+#define GPR_SIZE_NOT_TRACKED 0xffffffffu
 
-typedef struct gpr_allocator_s
-{
-  char debug_name[32];  // allocator's name for tracing purpose
-  SZ   total_allocated; // total amount of memory allocated by this allocator
+typedef struct gpr_allocator_s gpr_allocator_t;
 
-  // allocates memory with the DEFAULT_ALIGN alignment
-  void *(*allocate)       (SZ size);
+// memory allocation functions
+void *gpr_allocate       (gpr_allocator_t *a, SZ size);
+void *gpr_allocate_align (gpr_allocator_t *a, SZ size, SZ align);
+void  gpr_deallocate     (gpr_allocator_t *a, void*p);
+SZ    gpr_allocated_tot  (gpr_allocator_t *a);
+SZ    gpr_allocated_for  (gpr_allocator_t *a, void*p);
 
-  // allocates memory with the specified alignment
-  void *(*allocate_align) (SZ size, I32 align);
+// global memory allocators
+extern gpr_allocator_t *gpr_default_allocator;
+extern gpr_allocator_t *gpr_scratch_allocator;
 
-  // frees an allocation mpreviously made by allocate()
-  void  (*deallocate)     (void *p);
-
-  // returns the amount of memory allocated for p.
-  // returns SIZE_NOT_TRACKED if the allocator does not support 
-  // individual allocation size tracking
-  SZ    (*allocated_size) (void *p);   
-
-} gpr_allocator_t;
-
-
+// initializes/shuts down the global memory allocators
+void gpr_memory_init     (SZ scratch_buffer_size);
+void gpr_memory_shutdown ();
 
 #endif // GPR_MEMORY_H

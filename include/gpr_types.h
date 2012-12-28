@@ -1,7 +1,9 @@
-#ifndef SHORT_TYPES_H
-#define SHORT_TYPES_H
+#ifndef GPR_TYPES_H
+#define GPR_TYPES_H
 
 #include <stdint.h>
+
+// short type aliases: please use that
 
 typedef size_t   SZ;
 
@@ -73,4 +75,10 @@ static F64 swapF64(F64 value)
   return u.asF64;
 }
 
-#endif // SHORT_TYPES_H
+// compiler shit & stuff
+
+#ifndef alignof
+  #define alignof(x) __alignof(x)
+#endif
+
+#endif // GPR_TYPES_H

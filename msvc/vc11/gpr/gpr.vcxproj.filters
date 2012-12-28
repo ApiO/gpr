@@ -17,9 +17,6 @@
     <ClCompile Include="src\tinycthread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\gpr_containers.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\gpr_memory.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,16 +28,19 @@
     <ClInclude Include="src\tinycthread.h">
       <Filter>Private Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\gpr_containers.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\gpr_assert.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gpr_memory.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\short_types.h">
+    <ClInclude Include="include\gpr_idlut.h">
+      <Filter>Public Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gpr_types.h">
+      <Filter>Public Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gpr_allocator.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
   </ItemGroup>
