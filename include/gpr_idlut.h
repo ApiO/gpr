@@ -71,7 +71,7 @@ void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table,                   \
   }                                                                         \
 }                                                                           \
                                                                             \
-void gpr_##type##_idlut_free(gpr_##type##_idlut_t *table)                   \
+void gpr_##type##_idlut_destroy(gpr_##type##_idlut_t *table)                \
 {                                                                           \
   gpr_deallocate(table->allocator, table->items);                           \
   gpr_deallocate(table->allocator, table->indices);                         \
@@ -139,8 +139,8 @@ gpr_##type##_idlut_items(gpr_##type##_idlut_t *table)                       \
   gpr_##type##_idlut_init(table, allocator, max_items)
 
 // free the id lookup table and all its memory
-#define gpr_idlut_free(type, table) \
-  gpr_##type##_idlut_free(table)
+#define gpr_idlut_destroy(type, table) \
+  gpr_##type##_idlut_destroy(table)
 
 // add the specified item to the table and return its id
 #define gpr_idlut_add(type, table, item_value) \

@@ -5,6 +5,7 @@
 #include "gpr_assert.h"
 #include "gpr_idlut.h"
 #include "gpr_memory.h"
+#include "gpr_array.h"
 
 // ---------------------------------------------------------------
 // Allocator tests
@@ -54,6 +55,51 @@ void test_scratch()
 }
 
 // ---------------------------------------------------------------
+// Array test
+// ---------------------------------------------------------------
+
+void test_array()
+{
+  gpr_allocator_t *a;
+  gpr_array_t(int) v1, v2;
+
+  gpr_memory_init(2);
+  a = gpr_default_allocator;
+
+  gpr_array_init(int, v1, a);
+
+  gpr_assert(gpr_array_size(v1) == 0);
+  gpr_array_push_back(int, v1, 3);
+
+  gpr_assert(gpr_array_size(v1) == 1);
+  gpr_assert(gpr_array_item(v1, 0) == 3);
+
+  gpr_array_init(int, v2, a);
+  gpr_array_copy(int, v2, v1);
+  gpr_assert(gpr_array_item(v2, 0) == 3);
+  gpr_array_item(v2, 0) = 5;
+  gpr_assert(gpr_array_item(v1,  0) == 3);
+  gpr_assert(gpr_array_item(v2, 0) == 5);
+  gpr_array_copy(int, v2, v1);
+  gpr_assert(gpr_array_item(v2, 0) == 3);
+
+  gpr_assert(gpr_array_end(v1) - gpr_array_begin(v1) == gpr_array_size(v1));
+  gpr_assert(*gpr_array_begin(v1) == 3);
+  gpr_array_pop_back(v1);
+  gpr_assert(gpr_array_empty(v1));
+
+  {
+    int i;
+    for (i=0; i<100; ++i) gpr_array_push_back(int, v1, i);
+  }
+  gpr_assert(gpr_array_size(v1) == 100);
+
+  gpr_array_destroy(v1);
+  gpr_array_destroy(v2);
+  gpr_memory_shutdown();
+}
+
+// ---------------------------------------------------------------
 // ID lookup table test
 // ---------------------------------------------------------------
 
@@ -63,7 +109,7 @@ typedef struct {
 
 GPR_IDLUT_INIT(entry)
 
-void test_idlut()
+  void test_idlut()
 {
   entry new_entry;
   U32   id1, id2, id3;
@@ -75,7 +121,7 @@ void test_idlut()
   gpr_idlut_init(entry, &table, a, 3);
 
   // max items should be the next power of 2
-  assert(table.max_items == 4);
+  gpr_assert(table.max_items == 4);
 
   new_entry.val = 1;
   id1 = gpr_idlut_add(entry, &table, &new_entry);
@@ -97,11 +143,11 @@ void test_idlut()
 
   gpr_idlut_remove(entry, &table, id1);
   gpr_assert(!gpr_idlut_has(entry, &table, id1));
-  
+
   gpr_idlut_remove(entry, &table, id3);
   gpr_assert(!gpr_idlut_has(entry, &table, id3));
 
-  gpr_idlut_free(entry, &table);
+  gpr_idlut_destroy(entry, &table);
 
   gpr_memory_shutdown();
 }
@@ -110,6 +156,7 @@ int main()
 {
   test_memory();
   test_scratch();
+  test_array();
   test_idlut();
   return 0;
 }

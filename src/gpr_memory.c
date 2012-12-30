@@ -92,7 +92,7 @@ void *malloc_allocate(malloc_t *a, SZ size, SZ align)
   header_t *h = (header_t*)malloc(ts);
   void     *p = data_pointer(h, align);
 
-  assert(align % 4 == 0);
+  gpr_assert(align % 4 == 0);
 
   fill(h, p, ts);
   a->total_allocated += ts;
