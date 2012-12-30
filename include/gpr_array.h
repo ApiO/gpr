@@ -5,7 +5,7 @@
 #include "gpr_memory.h"
 
 #define gpr_array_t(type) \
-  struct { gpr_allocator_t *allocator; SZ size, capacity; type *data; }
+struct { gpr_allocator_t *allocator; SZ size, capacity; type *data; }
 
 #define gpr_array_item(a, i)  ((a).data[(i)])
 #define gpr_array_pop_back(a) ((a).data[--(a).size])
@@ -36,19 +36,16 @@ do {                                                               \
   gpr_deallocate((a).allocator, tmp);                              \
 } while(0)
 
-#define gpr_array_push_back(type, a, x)							               \
+#define gpr_array_push_back(type, a, x)                            \
 do {									                                             \
-  if ((a).size == (a).capacity) {										               \
+  if ((a).size == (a).capacity)									                   \
     _gpr_array_realloc(type, a, (a).capacity << 1);                \
-  }															                                   \
   (a).data[(a).size++] = (x);										                   \
 } while (0)
 
-#define gpr_array_set_capacity(type, a, c)                         \
-   _gpr_array_realloc(type, a, gpr_next_pow2_U32(c));              \
-
 #define gpr_array_reserve(type, a, c)                              \
-  if(c > (a).capacity) gpr_array_set_capacity(type, a, c)          \
+if(c > (a).capacity)                                               \
+  _gpr_array_realloc(type, a, gpr_next_pow2_U32(c))
 
 #define gpr_array_copy(type, dest, src)                            \
 do {                                                               \
