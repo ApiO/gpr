@@ -170,7 +170,7 @@ void *scratch_allocate(scratch_t *a, SZ size, SZ align)
   char *data = (char*)data_pointer(h, align);
 
   gpr_assert(align % 4 == 0);
-  size = ((size + 3)/4)*4;
+  size = ((size + 3)/4)*4; // roundup to the next multiple of 4
 
   p = data + size;
 
@@ -232,6 +232,7 @@ SZ scratch_allocated_tot(scratch_t *a)
 
 void scratch_init(scratch_t *a, SZ size, gpr_allocator_t *backing)
 {
+  a->backing  = backing;
   a->begin    = (char*)gpr_allocate(a->backing, size);
   a->end      = a->begin + size;
   a->allocate = a->begin;
@@ -246,7 +247,7 @@ void scratch_init(scratch_t *a, SZ size, gpr_allocator_t *backing)
 
 void scratch_shutdown(scratch_t *a)
 {
-  gpr_assert(a->free = a->allocate);
+  gpr_assert(a->free == a->allocate);
   gpr_deallocate(a->backing, a->begin);
 }
 
@@ -275,9 +276,9 @@ void gpr_memory_init(SZ scratch_buffer_size)
 
 void gpr_memory_shutdown()
 {
-  // default allocator shutdown
-  malloc_shutdown((malloc_t*)gpr_default_allocator);
-
   // scratch allocator shutdown
   scratch_shutdown((scratch_t*)gpr_scratch_allocator);
+
+  // default allocator shutdown
+  malloc_shutdown((malloc_t*)gpr_default_allocator);
 }

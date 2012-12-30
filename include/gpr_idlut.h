@@ -5,6 +5,7 @@
 #include <stdlib.h> 
 #include "gpr_assert.h"
 #include "gpr_types.h"
+#include "gpr_memory.h"
 
 // -------------------------------------------------------------------------
 // Id Lookup Table Container 
@@ -34,6 +35,7 @@ typedef struct                                                              \
                                                                             \
 typedef struct                                                              \
 {                                                                           \
+  gpr_allocator_t *allocator;                                               \
   U16 max_items;        /* maximum number of items available in the table */\
   U16 num_items;        /* number of items in the id lookup table */        \
   gpr_##type##_idlut_item                                                   \
@@ -43,14 +45,16 @@ typedef struct                                                              \
   U16 freelist_dequeue; /* index of the next available table index */       \
 } gpr_##type##_idlut_t;                                                     \
                                                                             \
-void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table, U16 max_items)    \
+void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table,                   \
+                             gpr_allocator_t *allocator, U16 max_items)     \
 {                                                                           \
-  table->items = (gpr_##type##_idlut_item*)                                 \
-                 malloc(max_items * sizeof(gpr_##type##_idlut_item));       \
-  gpr_assert_alloc(table->items);                                           \
+  max_items = gpr_next_pow2_U16(max_items);                                 \
+  table->allocator = allocator;                                             \
+  table->items = (gpr_##type##_idlut_item*)gpr_allocate(table->allocator,   \
+                  max_items * sizeof(gpr_##type##_idlut_item));             \
                                                                             \
-  table->indices = (gpr_index_t*)malloc(max_items * sizeof(gpr_index_t));   \
-  gpr_assert_alloc(table->indices);                                         \
+  table->indices = (gpr_index_t*)gpr_allocate(table->allocator,             \
+                    max_items * sizeof(gpr_index_t));                       \
                                                                             \
   table->max_items        = max_items;                                      \
   table->num_items        = 0;                                              \
@@ -69,8 +73,8 @@ void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table, U16 max_items)    \
                                                                             \
 void gpr_##type##_idlut_free(gpr_##type##_idlut_t *table)                   \
 {                                                                           \
-  free(table->items);                                                       \
-  free(table->indices);                                                     \
+  gpr_deallocate(table->allocator, table->items);                           \
+  gpr_deallocate(table->allocator, table->indices);                         \
 }                                                                           \
                                                                             \
 U32 gpr_##type##_idlut_add(gpr_##type##_idlut_t *table,                     \
@@ -78,6 +82,8 @@ U32 gpr_##type##_idlut_add(gpr_##type##_idlut_t *table,                     \
 {                                                                           \
   gpr_##type##_idlut_item *item;                                            \
   gpr_index_t *in = &table->indices[table->freelist_dequeue];               \
+                                                                            \
+  gpr_assert(table->num_items + 1 <= table->max_items);                     \
                                                                             \
   in->id    += GPR_ID_ADD ;                                                 \
   in->index  = table->num_items;                                            \
@@ -129,8 +135,8 @@ gpr_##type##_idlut_items(gpr_##type##_idlut_t *table)                       \
 #define gpr_idlut_t(type) gpr_##type##_idlut_t
 
 // create an id lookup table allocating memory for "max_items"
-#define gpr_idlut_init(type, table, max_items) \
-  gpr_##type##_idlut_init(table, max_items)
+#define gpr_idlut_init(type, table, allocator, max_items) \
+  gpr_##type##_idlut_init(table, allocator, max_items)
 
 // free the id lookup table and all its memory
 #define gpr_idlut_free(type, table) \

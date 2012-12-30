@@ -1,63 +1,115 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+
+#include "gpr_assert.h"
 #include "gpr_idlut.h"
+#include "gpr_memory.h"
+
+// ---------------------------------------------------------------
+// Allocator tests
+// ---------------------------------------------------------------
+
+void test_memory()
+{
+  gpr_allocator_t *a;
+  void *p, *q;
+
+  gpr_memory_init(4*1024*1024);
+  a = gpr_default_allocator;
+
+  p = gpr_allocate(a, 100);
+  gpr_assert(gpr_allocated_for(a,p) >= 100);
+  gpr_assert(gpr_allocated_tot(a)   >= 100);
+  q = gpr_allocate(a, 100);
+  gpr_assert(gpr_allocated_for(a,q) >= 100);
+  gpr_assert(gpr_allocated_tot(a)   >= 200);
+
+  gpr_deallocate(a,p);
+  gpr_deallocate(a,q);
+
+  gpr_memory_shutdown();
+}
+
+void test_scratch()
+{
+  gpr_allocator_t *a;
+  char *p, *pointers[100];
+  int   i;
+
+  gpr_memory_init(256*1024);
+  a = gpr_scratch_allocator;
+
+  p = (char*)gpr_allocate(a, 10*1024);
+
+  for (i=0; i<100; ++i) pointers[i] = (char*)gpr_allocate(a, 1024);
+  for (i=0; i<100; ++i) gpr_deallocate(a, pointers[i]);
+
+  gpr_deallocate(a, p);
+
+  for (i=0; i<100; ++i) pointers[i] = (char *)gpr_allocate(a, 4*1024);
+  for (i=0; i<100; ++i) gpr_deallocate(a, pointers[i]);
+
+  gpr_memory_shutdown();
+}
+
+// ---------------------------------------------------------------
+// ID lookup table test
+// ---------------------------------------------------------------
 
 typedef struct {
-  I32 var1;
-  I32 var2;
+  I32 val;
 } entry;
 
 GPR_IDLUT_INIT(entry)
 
-void print_entries_st(gpr_entry_idlut_t *table)
+void test_idlut()
 {
-  I32 i;
-  gpr_idlut_item(entry) *items = gpr_idlut_items(entry, table);
+  entry new_entry;
+  U32   id1, id2, id3;
+  gpr_idlut_t(entry) table;
+  gpr_allocator_t *a = gpr_default_allocator;
 
-  printf("ID\tvar1\tvar2\n");
-  for(i = 0; i < table->num_items; i++)
-  {
-    printf("%d\t%d\t%d\n", items[i].id, items[i].value.var1, items[i].value.var2);
-  }
+  gpr_memory_init(512);
+
+  gpr_idlut_init(entry, &table, a, 3);
+
+  // max items should be the next power of 2
+  assert(table.max_items == 4);
+
+  new_entry.val = 1;
+  id1 = gpr_idlut_add(entry, &table, &new_entry);
+  gpr_assert(gpr_idlut_has(entry, &table, id1));
+  gpr_assert(gpr_idlut_lookup(entry, &table, id1)->val == 1);
+
+  new_entry.val = 2;
+  id2 = gpr_idlut_add(entry, &table, &new_entry);
+  gpr_assert(gpr_idlut_has(entry, &table, id2));
+  gpr_assert(gpr_idlut_lookup(entry, &table, id2)->val == 2);
+
+  gpr_idlut_remove(entry, &table, id2);
+  gpr_assert(!gpr_idlut_has(entry, &table, id2));
+
+  new_entry.val = 3;
+  id3 = gpr_idlut_add(entry, &table, &new_entry);
+  gpr_assert(gpr_idlut_has(entry, &table, id3));
+  gpr_assert(gpr_idlut_lookup(entry, &table, id3)->val == 3);
+
+  gpr_idlut_remove(entry, &table, id1);
+  gpr_assert(!gpr_idlut_has(entry, &table, id1));
+  
+  gpr_idlut_remove(entry, &table, id3);
+  gpr_assert(!gpr_idlut_has(entry, &table, id3));
+
+  gpr_idlut_free(entry, &table);
+
+  gpr_memory_shutdown();
 }
 
 int main()
 {
-  entry new_entry;
-  U32   id1, id2, id3;
-
-  gpr_idlut_t(entry) table;
-  gpr_idlut_init(entry, &table, 8);
-
-  new_entry.var1 = 1;
-  new_entry.var2 = 2;
-  id1 = gpr_idlut_add(entry, &table, &new_entry);
-
-  new_entry.var1 = 3;
-  new_entry.var2 = 4;
-  id2 = gpr_idlut_add(entry, &table, &new_entry);
-
-  new_entry.var1 = 5;
-  new_entry.var2 = 6;
-  id3 = gpr_idlut_add(entry, &table, &new_entry);
-
-  printf("initial setup\n");
-  print_entries_st(&table);
-
-  printf("remove %d\n", id2);
-  gpr_idlut_remove(entry, &table, id2);
-  print_entries_st(&table);
-
-  printf("add a new entry\n");
-  new_entry.var1 = 7;
-  new_entry.var2 = 8;
-  gpr_idlut_add(entry, &table, &new_entry);
-  print_entries_st(&table);
-
-  printf("remove %d\n", id1);
-  gpr_idlut_remove(entry, &table, id1);
-  print_entries_st(&table);
-
+  test_memory();
+  test_scratch();
+  test_idlut();
   return 0;
 }

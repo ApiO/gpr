@@ -21,13 +21,13 @@ typedef double   F64;
 
 // endian swapping functions
 
-static U16 swapU16(U16 value)
+static U16 gpr_swap_U16(U16 value)
 {
   return ((value & 0x00FF) << 8) 
        | ((value & 0xFF00) >> 8);
 }
 
-static U32 swapU32(U32 value)
+static U32 gpr_swap_U32(U32 value)
 {
   return ((value & 0x000000FF) << 24)
        | ((value & 0x0000FF00) << 8)
@@ -35,7 +35,7 @@ static U32 swapU32(U32 value)
        | ((value & 0xFF000000) >> 24);
 }
 
-static U64 swapU64(U64 value)
+static U64 gpr_swap_U64(U64 value)
 {
   return ((value & 0x00000000000000FF) << 56)
        | ((value & 0x000000000000FF00) << 40)
@@ -47,7 +47,7 @@ static U64 swapU64(U64 value)
        | ((value & 0xFF00000000000000) >> 56);
 }
 
-static F32 swapF32(F32 value)
+static F32 gpr_swap_F32(F32 value)
 {
   union U32F32
   {
@@ -56,12 +56,12 @@ static F32 swapF32(F32 value)
   } u;
 
   u.asF32 = value;
-  u.asU32 = swapU32(u.asU32);
+  u.asU32 = gpr_swap_U32(u.asU32);
 
   return u.asF32;
 }
 
-static F64 swapF64(F64 value)
+static F64 gpr_swap_F64(F64 value)
 {
   union U64F64
   {
@@ -70,9 +70,57 @@ static F64 swapF64(F64 value)
   } u;
 
   u.asF64 = value;
-  u.asU64 = swapU64(u.asU64);
+  u.asU64 = gpr_swap_U64(u.asU64);
 
   return u.asF64;
+}
+
+// next power of 2 roundups
+
+static U8 gpr_next_pow2_U8(U8 value)
+{
+  --value;
+  value |= value >> 1;
+  value |= value >> 2;
+  value |= value >> 4;
+  ++value;
+  return value;
+}
+
+static U16 gpr_next_pow2_U16(U16 value)
+{
+  --value;
+  value |= value >> 1;
+  value |= value >> 2;
+  value |= value >> 4;
+  value |= value >> 8;
+  ++value;
+  return value;
+}
+
+static U32 gpr_next_pow2_U32(U32 value)
+{
+  --value;
+  value |= value >> 1;
+  value |= value >> 2;
+  value |= value >> 4;
+  value |= value >> 8;
+  value |= value >> 16;
+  ++value;
+  return value;
+}
+
+static U64 gpr_next_pow2_U64(U64 value)
+{
+  --value;
+  value |= value >> 1;
+  value |= value >> 2;
+  value |= value >> 4;
+  value |= value >> 8;
+  value |= value >> 16;
+  value |= value >> 32;
+  ++value;
+  return value;
 }
 
 // compiler shit & stuff
