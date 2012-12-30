@@ -37,10 +37,10 @@ do {                                                               \
 } while(0)
 
 #define gpr_array_push_back(type, a, x)                            \
-do {									                                             \
-  if ((a).size == (a).capacity)									                   \
+do {                                                               \
+  if ((a).size == (a).capacity)                                    \
     _gpr_array_realloc(type, a, (a).capacity << 1);                \
-  (a).data[(a).size++] = (x);										                   \
+  (a).data[(a).size++] = (x);                                      \
 } while (0)
 
 #define gpr_array_reserve(type, a, c)                              \
