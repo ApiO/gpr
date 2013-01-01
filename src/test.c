@@ -6,6 +6,7 @@
 #include "gpr_idlut.h"
 #include "gpr_memory.h"
 #include "gpr_array.h"
+#include "gpr_tmp_allocator.h"
 
 // ---------------------------------------------------------------
 // Allocator tests
@@ -51,6 +52,26 @@ void test_scratch()
   for (i=0; i<100; ++i) pointers[i] = (char *)gpr_allocate(a, 4*1024);
   for (i=0; i<100; ++i) gpr_deallocate(a, pointers[i]);
 
+  gpr_memory_shutdown();
+}
+
+void test_tmp_allocator()
+{
+  gpr_memory_init(4*1024*1024);
+  {
+    gpr_tmp_allocator_128_t  ta;
+    gpr_allocator_t         *a = (gpr_allocator_t*)&ta;
+    gpr_array_t(int)         ar;
+
+    gpr_tmp_allocator_init(a, 128);
+    gpr_array_init(int, ar, a);
+    {
+      int i;
+      for (i=0; i<100; ++i) gpr_array_push_back(int, ar, i);
+    }
+    gpr_allocate(a, 2*1024);
+    gpr_tmp_allocator_destroy(a);
+  }
   gpr_memory_shutdown();
 }
 
@@ -156,6 +177,7 @@ int main()
 {
   test_memory();
   test_scratch();
+  test_tmp_allocator();
   test_array();
   test_idlut();
   return 0;

@@ -32,24 +32,12 @@ typedef struct gpr_allocator_s
 
 // aligns p to the specified alignment by moving it forward if necessary and 
 // returns the result.
-void *gpr_align_forward(void *p, SZ align) 
+static void *gpr_align_forward(void *p, SZ align) 
 {
     U8 *pi = (U8*)p;
     const SZ mod = (SZ)pi % align;
     if (mod) pi += (align - mod);
     return (void *)pi;
-}
-
-// returns the result of advancing p by the specified number of bytes
-void *gpr_pointer_add(void *p, SZ bytes)
-{
-    return (void*)((char*)p + bytes);
-}
-
-// returns the result of moving p back by the specified number of bytes
-void *gpr_pointer_sub(void *p, SZ bytes)
-{
-    return (void*)((char*)p - bytes);
 }
 
 #endif
