@@ -45,7 +45,7 @@ typedef struct                                                              \
   U16 freelist_dequeue; /* index of the next available table index */       \
 } gpr_##type##_idlut_t;                                                     \
                                                                             \
-void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table,                   \
+static void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table,            \
                              gpr_allocator_t *allocator, U16 max_items)     \
 {                                                                           \
   max_items = gpr_next_pow2_U16(max_items);                                 \
@@ -71,13 +71,13 @@ void gpr_##type##_idlut_init(gpr_##type##_idlut_t *table,                   \
   }                                                                         \
 }                                                                           \
                                                                             \
-void gpr_##type##_idlut_destroy(gpr_##type##_idlut_t *table)                \
+static void gpr_##type##_idlut_destroy(gpr_##type##_idlut_t *table)         \
 {                                                                           \
   gpr_deallocate(table->allocator, table->items);                           \
   gpr_deallocate(table->allocator, table->indices);                         \
 }                                                                           \
                                                                             \
-U32 gpr_##type##_idlut_add(gpr_##type##_idlut_t *table,                     \
+static U32 gpr_##type##_idlut_add(gpr_##type##_idlut_t *table,              \
                            const type *item_value)                          \
 {                                                                           \
   gpr_##type##_idlut_item *item;                                            \
@@ -98,18 +98,18 @@ U32 gpr_##type##_idlut_add(gpr_##type##_idlut_t *table,                     \
   return in->id;                                                            \
 }                                                                           \
                                                                             \
-I32 gpr_##type##_idlut_has(gpr_##type##_idlut_t *table, U32 id)             \
+static I32 gpr_##type##_idlut_has(gpr_##type##_idlut_t *table, U32 id)      \
 {                                                                           \
   gpr_index_t *in = &table->indices[id & GPR_INDEX_MASK];                   \
   return in->id == id && in->index != USHRT_MAX;                            \
 }                                                                           \
                                                                             \
-type *gpr_##type##_idlut_lookup(gpr_##type##_idlut_t *table, U32 id)        \
+static type *gpr_##type##_idlut_lookup(gpr_##type##_idlut_t *table, U32 id) \
 {                                                                           \
   return &table->items[table->indices[id & GPR_INDEX_MASK].index].value;    \
 }                                                                           \
                                                                             \
-void gpr_##type##_idlut_remove(gpr_##type##_idlut_t *table, U32 id)         \
+static void gpr_##type##_idlut_remove(gpr_##type##_idlut_t *table, U32 id)  \
 {                                                                           \
   gpr_##type##_idlut_item *item;                                            \
   gpr_index_t *in = &table->indices[id & GPR_INDEX_MASK];                   \
@@ -125,7 +125,7 @@ void gpr_##type##_idlut_remove(gpr_##type##_idlut_t *table, U32 id)         \
     table->freelist_dequeue = table->freelist_enqueue;                      \
 }                                                                           \
                                                                             \
-gpr_##type##_idlut_item *                                                   \
+static gpr_##type##_idlut_item *                                            \
 gpr_##type##_idlut_items(gpr_##type##_idlut_t *table)                       \
 {                                                                           \
   return table->items;                                                      \

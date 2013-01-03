@@ -1,6 +1,7 @@
 #ifndef GPR_ARRAY_H
 #define GPR_ARRAY_H
 
+#include <memory.h>
 #include "gpr_types.h"
 #include "gpr_memory.h"
 
@@ -41,11 +42,15 @@ do {                                                               \
   if ((a).size == (a).capacity)                                    \
     _gpr_array_realloc(type, a, (a).capacity << 1);                \
   (a).data[(a).size++] = (x);                                      \
-} while (0)
+} while(0)
 
 #define gpr_array_reserve(type, a, c)                              \
-if(c > (a).capacity)                                               \
-  _gpr_array_realloc(type, a, gpr_next_pow2_U32(c))
+if((c) > (a).capacity)                                             \
+  _gpr_array_realloc(type, (a), gpr_next_pow2_U32(c))
+
+#define gpr_array_resize(type, a, s)                               \
+  gpr_array_reserve(type, (a), (s));                               \
+  (a).size = s
 
 #define gpr_array_copy(type, dest, src)                            \
 do {                                                               \

@@ -49,5 +49,8 @@
     <ClInclude Include="include\gpr_tmp_allocator.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\gpr_hash.h">
+      <Filter>Public Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
