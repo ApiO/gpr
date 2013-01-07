@@ -95,6 +95,9 @@ void test_array()
   }
   gpr_assert(gpr_array_size(v1) == 100);
 
+  gpr_array_remove(v1, 50);
+  gpr_assert(gpr_array_size(v1) == 99);
+
   gpr_array_destroy(v1);
   gpr_array_destroy(v2);
   gpr_memory_shutdown();
