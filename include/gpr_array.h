@@ -44,6 +44,9 @@ do {                                                               \
   (a).data[(a).size++] = (x);                                      \
 } while(0)
 
+#define gpr_array_remove(a, i)                                     \
+  ((a).data[i] = (a).data[--(a).size])
+
 #define gpr_array_reserve(type, a, c)                              \
 if((c) > (a).capacity)                                             \
   _gpr_array_realloc(type, (a), gpr_next_pow2_U32(c))
