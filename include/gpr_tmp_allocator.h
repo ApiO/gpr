@@ -13,6 +13,9 @@
 // the memory that may be allocated by the backing allocator.
 // -------------------------------------------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define GPR_TMP_ALLOCATOR_INIT(s) \
 typedef struct                    \
@@ -36,5 +39,9 @@ GPR_TMP_ALLOCATOR_INIT(4096)
 
 void gpr_tmp_allocator_init    (void *a, SZ size);
 void gpr_tmp_allocator_destroy (void *a);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // GPR_TMP_ALLOCATOR_H

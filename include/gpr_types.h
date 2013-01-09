@@ -129,4 +129,12 @@ static U64 gpr_next_pow2_U64(U64 value)
   #define alignof(x) __alignof(x)
 #endif
 
+#ifndef NULL
+#ifdef __cplusplus
+#define NULL    0
+#else
+#define NULL    ((void *)0)
+#endif
+#endif
+
 #endif // GPR_TYPES_H

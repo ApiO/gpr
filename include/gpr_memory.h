@@ -6,6 +6,10 @@
 #define GPR_DEFAULT_ALIGN 4
 #define GPR_SIZE_NOT_TRACKED 0xffffffffu
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct gpr_allocator_s gpr_allocator_t;
 
 // memory allocation functions
@@ -22,5 +26,9 @@ extern gpr_allocator_t *gpr_scratch_allocator;
 // initializes/shuts down the global memory allocators
 void gpr_memory_init     (SZ scratch_buffer_size);
 void gpr_memory_shutdown ();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // GPR_MEMORY_H

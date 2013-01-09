@@ -7,6 +7,7 @@
 #include "gpr_memory.h"
 #include "gpr_array.h"
 #include "gpr_tmp_allocator.h"
+#include "gpr_hash.h"
 
 // ---------------------------------------------------------------
 // Default allocator tests
@@ -64,7 +65,7 @@ void test_array()
   gpr_allocator_t *a;
   gpr_array_t(int) v1, v2;
 
-  gpr_memory_init(2);
+  gpr_memory_init(4*1024*1024);
   a = gpr_default_allocator;
 
   gpr_array_init(int, v1, a);
@@ -92,6 +93,7 @@ void test_array()
   {
     int i;
     for (i=0; i<100; ++i) gpr_array_push_back(int, v1, i);
+    for (i=0; i<100; ++i) gpr_assert(gpr_array_item(v1, i) == i);
   }
   gpr_assert(gpr_array_size(v1) == 100);
 
@@ -137,7 +139,7 @@ typedef struct {
 
 GPR_IDLUT_INIT(entry)
 
-void test_idlut()
+  void test_idlut()
 {
   entry new_entry;
   U32   id1, id2, id3;
@@ -180,12 +182,54 @@ void test_idlut()
   gpr_memory_shutdown();
 }
 
+void test_hash()
+{
+  gpr_allocator_t *a;
+  gpr_hash_t       h;
+  int              v;
+
+  gpr_memory_init(0);
+  a = gpr_default_allocator;
+
+  gpr_hash_init(&h, sizeof(int), a);
+
+  gpr_assert(!gpr_hash_has(&h, 0));
+  gpr_hash_remove(&h, 0);
+
+  v = 123;
+  gpr_hash_set(&h, sizeof(int), 1000, &v);
+  //gpr_assert(*(int*)gpr_hash_get(&h,sizeof(int),1000) == 123);
+
+  //{
+  //  int i;
+  //  for (i=0; i<100; ++i) {
+  //    v = i*i;
+  //    gpr_hash_set(&h, sizeof(int), i, &v);
+  //  }
+  //  for (i=0; i<100; ++i)
+  //    gpr_assert(*(int*)gpr_hash_get(&h,sizeof(int),i) == i*i);
+  //}
+
+  //gpr_hash_remove(&h, 1000);
+  //gpr_assert(!gpr_hash_has(&h, 1000));
+  //gpr_hash_remove(&h, 2000);
+  //gpr_assert(gpr_hash_get(&h,sizeof(int),1000) == NULL);
+  //{ 
+  //  int i;
+  //  for (i=0; i<100; ++i)
+  //    gpr_assert(*(int*)gpr_hash_get(&h,sizeof(int),i) == i*i);
+  //}
+  gpr_hash_destroy(&h);
+  gpr_memory_shutdown();
+}
+
 int main()
 {
-  test_memory();
-  test_scratch();
-  test_tmp_allocator();
-  test_array();
-  test_idlut();
+  //test_memory();
+  //test_scratch();
+  //test_tmp_allocator();
+  //test_array();
+  //test_idlut();
+  test_hash();
   return 0;
 }

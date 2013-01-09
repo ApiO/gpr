@@ -1,5 +1,5 @@
-#ifndef GPR_CONTAINERS_H
-#define GPR_CONTAINERS_H
+#ifndef GPR_IDLUT_H
+#define GPR_IDLUT_H
 
 //#include "memory.h"
 #include <stdlib.h> 
@@ -14,8 +14,6 @@
 // http://www.altdevblogaday.com/2011/09/23/managing-decoupling-part-4-the-id-lookup-table/
 // -------------------------------------------------------------------------
 
-// opaque table index structure 
-// used to avoid item fragmentation adding a level of indirection
 typedef struct
 {
   U32  id;    // external id
@@ -162,4 +160,4 @@ gpr_##type##_idlut_items(gpr_##type##_idlut_t *table)                       \
 #define gpr_idlut_items(type, table) \
   gpr_##type##_idlut_items(table)
 
-#endif // GPR_CONTAINERS_H
+#endif // GPR_IDLUT_H
