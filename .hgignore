@@ -8,3 +8,4 @@ msvc/vc11/gpr/include/
 msvc/vc11/Debug/
 msvc/vc11/gpr/Debug/
 msvc/vc11/gpr/Release/
+msvc/vc11/gpr/build/
