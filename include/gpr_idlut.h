@@ -128,6 +128,42 @@ gpr_##type##_idlut_items(gpr_##type##_idlut_t *table)                       \
 {                                                                           \
   return table->items;                                                      \
 }                                                                           \
+                                                                            \
+static void gpr_##type##_idlut_swap                                         \
+              (gpr_##type##_idlut_t *table, U32 src_id, U32 dest_id)        \
+{                                                                           \
+  U16 swap_i;                                                               \
+  gpr_##type##_idlut_item swap;                                             \
+  gpr_index_t *src_in = &table->indices[src_id & GPR_INDEX_MASK];           \
+  gpr_index_t *dest_in = &table->indices[dest_id & GPR_INDEX_MASK];         \
+                                                                            \
+  swap = table->items[dest_in->index];                                      \
+  table->items[dest_in->index] = table->items[src_in->index];               \
+  table->items[src_in->index] = swap;                                       \
+                                                                            \
+  swap_i = dest_in->index;                                                  \
+  dest_in->index = src_in->index;                                           \
+  src_in->index = swap_i;                                                   \
+                                                                            \
+  swap_i = src_in->next;                                                    \
+  src_in->next = dest_in->next;                                             \
+  dest_in->next = swap_i;                                                   \
+}                                                                           \
+                                                                            \
+static void gpr_##type##_idlut_swap_to                                      \
+              (gpr_##type##_idlut_t *table, U32 id, int index)              \
+{                                                                           \
+  int i;                                                                    \
+  U16 dest_id;                                                              \
+                                                                            \
+  for(i = 0; table->num_items; i++)                                         \
+    if(table->indices[i].index == index)                                    \
+    {                                                                       \
+      dest_id = table->indices[i].id;                                       \
+      break;                                                                \
+    }                                                                       \
+  gpr_##type##_idlut_swap(table, id, dest_id);                              \
+}                                                                           \
 
 #define gpr_idlut_item(type) gpr_##type##_idlut_item
 #define gpr_idlut_t(type) gpr_##type##_idlut_t
@@ -159,5 +195,11 @@ gpr_##type##_idlut_items(gpr_##type##_idlut_t *table)                       \
 // return the table item list
 #define gpr_idlut_items(type, table) \
   gpr_##type##_idlut_items(table)
+
+#define gpr_idlut_swap(type, table, src_id, dest_id) \
+  gpr_##type##_idlut_swap(table, src_id, dest_id)
+  
+#define gpr_idlut_swap_to(type, table, id, index) \
+  gpr_##type##_idlut_swap_to(table, id, index)
 
 #endif // GPR_IDLUT_H

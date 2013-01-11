@@ -139,14 +139,15 @@ typedef struct {
 
 GPR_IDLUT_INIT(entry)
 
-  void test_idlut()
+void test_idlut()
 {
   entry new_entry;
   U32   id1, id2, id3;
   gpr_idlut_t(entry) table;
-  gpr_allocator_t *a = gpr_default_allocator;
+  gpr_allocator_t *a;
 
   gpr_memory_init(512);
+  a = gpr_default_allocator;
 
   gpr_idlut_init(entry, &table, a, 3);
 
@@ -163,16 +164,24 @@ GPR_IDLUT_INIT(entry)
   gpr_assert(gpr_idlut_has(entry, &table, id2));
   gpr_assert(gpr_idlut_lookup(entry, &table, id2)->val == 2);
 
-  gpr_idlut_remove(entry, &table, id2);
-  gpr_assert(!gpr_idlut_has(entry, &table, id2));
-
   new_entry.val = 3;
   id3 = gpr_idlut_add(entry, &table, &new_entry);
   gpr_assert(gpr_idlut_has(entry, &table, id3));
   gpr_assert(gpr_idlut_lookup(entry, &table, id3)->val == 3);
 
+  gpr_idlut_swap(entry, &table, id3, id1);
+  gpr_assert(table.items[0].value.val == 3);
+  gpr_assert(gpr_idlut_lookup(entry, &table, id3)->val == 3);
+
+  gpr_idlut_swap_to(entry, &table, id2, 0);
+  gpr_assert(table.items[0].value.val == 2);
+  gpr_assert(gpr_idlut_lookup(entry, &table, id2)->val == 2);
+
   gpr_idlut_remove(entry, &table, id1);
   gpr_assert(!gpr_idlut_has(entry, &table, id1));
+
+  gpr_idlut_remove(entry, &table, id2);
+  gpr_assert(!gpr_idlut_has(entry, &table, id2));
 
   gpr_idlut_remove(entry, &table, id3);
   gpr_assert(!gpr_idlut_has(entry, &table, id3));
@@ -222,6 +231,10 @@ void test_hash()
   gpr_hash_destroy(&h);
   gpr_memory_shutdown();
 }
+
+// ---------------------------------------------------------------
+// MAIN
+// ---------------------------------------------------------------
 
 int main()
 {
