@@ -153,16 +153,7 @@ static void gpr_##type##_idlut_swap                                         \
 static void gpr_##type##_idlut_swap_to                                      \
               (gpr_##type##_idlut_t *table, U32 id, int index)              \
 {                                                                           \
-  int i;                                                                    \
-  U16 dest_id;                                                              \
-                                                                            \
-  for(i = 0; table->num_items; i++)                                         \
-    if(table->indices[i].index == index)                                    \
-    {                                                                       \
-      dest_id = table->indices[i].id;                                       \
-      break;                                                                \
-    }                                                                       \
-  gpr_##type##_idlut_swap(table, id, dest_id);                              \
+  gpr_##type##_idlut_swap(table, id, table->items[index].id);               \
 }                                                                           \
 
 #define gpr_idlut_item(type) gpr_##type##_idlut_item
