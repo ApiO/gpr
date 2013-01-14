@@ -14,6 +14,7 @@
     <ClInclude Include="include\gpr_allocator.h" />
     <ClInclude Include="include\gpr_array.h" />
     <ClInclude Include="include\gpr_assert.h" />
+    <ClInclude Include="include\gpr_buffer.h" />
     <ClInclude Include="include\gpr_hash.h" />
     <ClInclude Include="include\gpr_idlut.h" />
     <ClInclude Include="include\gpr_memory.h" />
@@ -22,6 +23,7 @@
     <ClInclude Include="src\tinycthread.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\gpr_buffer.c" />
     <ClCompile Include="src\gpr_hash.c" />
     <ClCompile Include="src\gpr_memory.c" />
     <ClCompile Include="src\gpr_tmp_allocator.c" />
