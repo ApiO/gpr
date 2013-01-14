@@ -8,17 +8,18 @@
 #define gpr_array_t(type) \
 struct { gpr_allocator_t *allocator; SZ size, capacity; type *data; }
 
-#define gpr_array_item(a, i)  ((a).data[(i)])
-#define gpr_array_pop_back(a) ((a).data[--(a).size])
-#define gpr_array_size(a)     ((a).size)
-#define gpr_array_empty(a)    ((a).size == 0)
-#define gpr_array_any(a)      ((a).size >  0)
-#define gpr_array_capacity(a) ((a).capacity)
-#define gpr_array_begin(a)    ((a).data)
-#define gpr_array_end(a)      ((a).data + (a).size)
-#define gpr_array_front(a)    ((a).data[0])
-#define gpr_array_back(a)     ((a).data[(a).size-1])
-#define gpr_array_destroy(a)  gpr_deallocate((a).allocator, (a).data)
+#define gpr_array_item(a, i)   ((a).data[(i)])
+#define gpr_array_pop_back(a)  ((a).data[--(a).size])
+#define gpr_array_remove(a, i) ((a).data[i] = (a).data[--(a).size])
+#define gpr_array_size(a)      ((a).size)
+#define gpr_array_empty(a)     ((a).size == 0)
+#define gpr_array_any(a)       ((a).size >  0)
+#define gpr_array_capacity(a)  ((a).capacity)
+#define gpr_array_begin(a)     ((a).data)
+#define gpr_array_end(a)       ((a).data + (a).size)
+#define gpr_array_front(a)     ((a).data[0])
+#define gpr_array_back(a)      ((a).data[(a).size-1])
+#define gpr_array_destroy(a)   gpr_deallocate((a).allocator, (a).data)
 
 #define gpr_array_init(type, a, alct)                              \
 do {                                                               \
@@ -43,9 +44,6 @@ do {                                                               \
     _gpr_array_realloc(type, a, (a).capacity << 1);                \
   (a).data[(a).size++] = (x);                                      \
 } while(0)
-
-#define gpr_array_remove(a, i)                                     \
-  ((a).data[i] = (a).data[--(a).size])
 
 #define gpr_array_reserve(type, a, c)                              \
 if((c) > (a).capacity)                                             \

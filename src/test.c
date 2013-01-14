@@ -195,40 +195,77 @@ void test_hash()
 {
   gpr_allocator_t *a;
   gpr_hash_t       h;
-  int              v;
+  I32              v;
 
   gpr_memory_init(0);
   a = gpr_default_allocator;
 
-  gpr_hash_init(&h, sizeof(int), a);
+  gpr_hash_init(I32, &h, a);
 
-  gpr_assert(!gpr_hash_has(&h, 0));
-  gpr_hash_remove(&h, 0);
+  gpr_assert(!gpr_hash_has(I32, &h, 0));
+  gpr_hash_remove(I32, &h, 0);
 
   v = 123;
-  gpr_hash_set(&h, sizeof(int), 1000, &v);
-  //gpr_assert(*(int*)gpr_hash_get(&h,sizeof(int),1000) == 123);
+  gpr_hash_set(I32, &h, 1000, &v);
+  gpr_assert(*gpr_hash_get(I32, &h, 1000) == 123);
 
-  //{
-  //  int i;
-  //  for (i=0; i<100; ++i) {
-  //    v = i*i;
-  //    gpr_hash_set(&h, sizeof(int), i, &v);
-  //  }
-  //  for (i=0; i<100; ++i)
-  //    gpr_assert(*(int*)gpr_hash_get(&h,sizeof(int),i) == i*i);
-  //}
+  {
+    int i;
+    for (i=0; i<100; ++i) {
+      v = i*i;
+      gpr_hash_set(I32, &h, i, &v);
+    }
+    for (i=0; i<100; ++i)
+      gpr_assert(*gpr_hash_get(I32, &h, i) == i*i);
+  }
 
-  //gpr_hash_remove(&h, 1000);
-  //gpr_assert(!gpr_hash_has(&h, 1000));
-  //gpr_hash_remove(&h, 2000);
-  //gpr_assert(gpr_hash_get(&h,sizeof(int),1000) == NULL);
-  //{ 
-  //  int i;
-  //  for (i=0; i<100; ++i)
-  //    gpr_assert(*(int*)gpr_hash_get(&h,sizeof(int),i) == i*i);
-  //}
-  gpr_hash_destroy(&h);
+  gpr_hash_remove(I32, &h, 1000);
+  gpr_assert(!gpr_hash_has(I32, &h, 1000));
+  gpr_hash_remove(I32, &h, 2000);
+  gpr_assert(gpr_hash_get(I32, &h, 1000) == NULL);
+  { 
+    int i;
+    for (i=0; i<100; ++i)
+      gpr_assert(*gpr_hash_get(I32, &h, i) == i*i);
+  }
+  gpr_hash_destroy(I32, &h);
+  gpr_memory_shutdown();
+}
+
+void test_multi_hash()
+{
+  gpr_hash_t       h;
+  I32              v;
+
+  gpr_memory_init(4*1024);
+
+  gpr_multi_hash_init(I32, &h, gpr_default_allocator);
+
+  gpr_assert(gpr_multi_hash_count(I32, &h, 0) == 0);
+  v = 1; gpr_multi_hash_insert(I32, &h, 0, &v);
+  v = 2; gpr_multi_hash_insert(I32, &h, 0, &v);
+  v = 3; gpr_multi_hash_insert(I32, &h, 0, &v);
+  gpr_assert(gpr_multi_hash_count(I32, &h, 0) == 3);
+
+  {
+    gpr_tmp_allocator_128_t ta;
+    gpr_array_t(I32) arr;
+    gpr_tmp_allocator_init(&ta, 128);
+    gpr_array_init(I32, arr, (gpr_allocator_t*)&ta);
+
+    gpr_multi_hash_get(I32, &h, 0, arr);
+    gpr_assert(gpr_array_size(arr) == 3);
+
+    /*gpr_multi_hash_remove(h, gpr_multi_hash_find_first(h, 0));
+    gpr_assert(gpr_multi_hash_count(h,0) == 2);
+    gpr_multi_hash_remove_all(h, 0);
+    gpr_assert(gpr_multi_hash_count(h, 0) == 0);*/
+
+    gpr_tmp_allocator_destroy(&ta);
+  }
+
+  gpr_multi_hash_destroy(I32, &h);
+
   gpr_memory_shutdown();
 }
 
@@ -244,5 +281,6 @@ int main()
   //test_array();
   //test_idlut();
   test_hash();
+  test_multi_hash();
   return 0;
 }
