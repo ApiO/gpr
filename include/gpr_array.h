@@ -6,7 +6,7 @@
 #include "gpr_memory.h"
 
 #define gpr_array_t(type) \
-struct { gpr_allocator_t *allocator; SZ size, capacity; type *data; }
+struct { type *data; U32 size, capacity; gpr_allocator_t *allocator; }
 
 #define gpr_array_item(a, i)   ((a).data[(i)])
 #define gpr_array_pop_back(a)  ((a).data[--(a).size])

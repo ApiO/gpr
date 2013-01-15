@@ -253,15 +253,15 @@ void *_gpr_multi_hash_find_first(gpr_hash_t *h, gpr_hash_it *it, U64 key)
 {
   find_result_t fr;
   find_index(h, key, &fr);
-  it->key = key;
 
-  if (fr.index_i == END_OF_LIST) 
+  if (it != NULL) 
   {
-    it->next = END_OF_LIST;
-    return NULL; 
+      it->key  = key;
+      it->next = (fr.index_i == END_OF_LIST) ? END_OF_LIST : 
+        gpr_array_item(h->indices, fr.index_i).next;
   }
+  if (fr.index_i == END_OF_LIST) return NULL;
 
-  it->next = gpr_array_item(h->indices, fr.index_i).next;
   return h->values.data + gpr_array_item(h->indices, fr.index_i).value_pos;
 }
 

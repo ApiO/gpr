@@ -132,14 +132,14 @@ void test_tmp_allocator()
 // ---------------------------------------------------------------
 // ID lookup table test
 // ---------------------------------------------------------------
-
+/*
 typedef struct {
   I32 val;
 } entry;
 
 GPR_IDLUT_INIT(entry)
 
-void test_idlut()
+  void test_idlut()
 {
   entry new_entry;
   U32   id1, id2, id3;
@@ -189,7 +189,11 @@ void test_idlut()
   gpr_idlut_destroy(entry, &table);
 
   gpr_memory_shutdown();
-}
+}*/
+
+// ---------------------------------------------------------------
+// Hash table tests
+// ---------------------------------------------------------------
 
 void test_hash()
 {
@@ -254,12 +258,14 @@ void test_multi_hash()
     gpr_array_init(I32, arr, (gpr_allocator_t*)&ta);
 
     gpr_multi_hash_get(I32, &h, 0, arr);
+
+
     gpr_assert(gpr_array_size(arr) == 3);
 
-    /*gpr_multi_hash_remove(h, gpr_multi_hash_find_first(h, 0));
-    gpr_assert(gpr_multi_hash_count(h,0) == 2);
-    gpr_multi_hash_remove_all(h, 0);
-    gpr_assert(gpr_multi_hash_count(h, 0) == 0);*/
+    gpr_multi_hash_remove(I32, &h, gpr_multi_hash_find_first(I32, &h, 0, 0));
+    gpr_assert(gpr_multi_hash_count(I32, &h,0) == 2);
+    gpr_multi_hash_remove_all(I32, &h, 0);
+    gpr_assert(gpr_multi_hash_count(I32, &h, 0) == 0);
 
     gpr_tmp_allocator_destroy(&ta);
   }
@@ -280,7 +286,7 @@ int main()
   //test_tmp_allocator();
   //test_array();
   //test_idlut();
-  test_hash();
+  //test_hash();
   test_multi_hash();
   return 0;
 }

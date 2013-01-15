@@ -7,9 +7,8 @@
 typedef struct
 {
   char *data;
-  U32   size;
-  U32   capacity;
-  gpr_allocator_t *allocator;
+  U32   size, capacity; 
+  gpr_allocator_t *allocator; 
 } gpr_buffer_t;
 
 void  gpr_buffer_init    (gpr_buffer_t *buf, gpr_allocator_t *a);

@@ -5,7 +5,7 @@
 #include "gpr_array.h"
 #include "gpr_buffer.h"
 
-typedef struct index_s
+typedef struct
 {
   U64 key;
   U32 next;
@@ -78,8 +78,8 @@ do {                                                      \
   gpr_hash_it it;                                         \
   type *e = gpr_multi_hash_find_first(type, h, &it, key); \
   while (e) {                                             \
-    e = gpr_multi_hash_find_next(type, h, &it);           \
     gpr_array_push_back(type, arr, *e);                   \
+    e = gpr_multi_hash_find_next(type, h, &it);           \
   }                                                       \
 } while(0)
 

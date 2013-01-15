@@ -9,7 +9,7 @@
 void gpr_buffer_init(gpr_buffer_t *buf, gpr_allocator_t *a)
 {
   buf->data      = NULL;
-  buf->size       = 0;
+  buf->size      = 0;
   buf->capacity  = 0;
   buf->allocator = a;
 }
