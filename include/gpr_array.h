@@ -55,9 +55,9 @@ if((c) > (a).capacity)                                             \
 
 #define gpr_array_copy(type, dest, src)                            \
 do {                                                               \
-  (dest).size = (src).size;                                        \
   gpr_array_reserve(type, (dest), (src).size);                     \
   memcpy((dest).data, (src).data, sizeof(type)*(src).size);        \
+  (dest).size = (src).size;                                        \
 } while(0)
 
 #endif // GPR_ARRAY_H
