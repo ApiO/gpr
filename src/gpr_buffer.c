@@ -65,8 +65,8 @@ char *gpr_buffer_ncat(gpr_buffer_t *buf, char *src, U32 size)
   if (buf->capacity == 0)
     buf->data = (char*)gpr_allocate(buf->allocator, gpr_next_pow2_U32(size));
 
-  pos = buf->data + buf->size;
   gpr_buffer_reserve(buf, buf->size + size + 1);
+  pos = buf->data + buf->size;
   memcpy(pos, src, size);
 
   buf->size += size;

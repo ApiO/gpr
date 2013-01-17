@@ -68,40 +68,40 @@ void test_array()
   gpr_memory_init(4*1024*1024);
   a = gpr_default_allocator;
 
-  gpr_array_init(int, v1, a);
+  gpr_array_init(int, &v1, a);
 
-  gpr_assert(gpr_array_size(v1) == 0);
-  gpr_array_push_back(int, v1, 3);
+  gpr_assert(gpr_array_size(&v1) == 0);
+  gpr_array_push_back(int, &v1, 3);
 
-  gpr_assert(gpr_array_size(v1) == 1);
-  gpr_assert(gpr_array_item(v1, 0) == 3);
+  gpr_assert(gpr_array_size(&v1) == 1);
+  gpr_assert(gpr_array_item(&v1, 0) == 3);
 
-  gpr_array_init(int, v2, a);
-  gpr_array_copy(int, v2, v1);
-  gpr_assert(gpr_array_item(v2, 0) == 3);
-  gpr_array_item(v2, 0) = 5;
-  gpr_assert(gpr_array_item(v1,  0) == 3);
-  gpr_assert(gpr_array_item(v2, 0) == 5);
-  gpr_array_copy(int, v2, v1);
-  gpr_assert(gpr_array_item(v2, 0) == 3);
+  gpr_array_init(int, &v2, a);
+  gpr_array_copy(int, &v2, &v1);
+  gpr_assert(gpr_array_item(&v2, 0) == 3);
+  gpr_array_item(&v2, 0) = 5;
+  gpr_assert(gpr_array_item(&v1,  0) == 3);
+  gpr_assert(gpr_array_item(&v2, 0) == 5);
+  gpr_array_copy(int, &v2, &v1);
+  gpr_assert(gpr_array_item(&v2, 0) == 3);
 
-  gpr_assert(gpr_array_end(v1) - gpr_array_begin(v1) == gpr_array_size(v1));
-  gpr_assert(*gpr_array_begin(v1) == 3);
-  gpr_array_pop_back(v1);
-  gpr_assert(gpr_array_empty(v1));
+  gpr_assert(gpr_array_end(&v1) - gpr_array_begin(&v1) == gpr_array_size(&v1));
+  gpr_assert(*gpr_array_begin(&v1) == 3);
+  gpr_array_pop_back(&v1);
+  gpr_assert(gpr_array_empty(&v1));
 
   {
     int i;
-    for (i=0; i<100; ++i) gpr_array_push_back(int, v1, i);
-    for (i=0; i<100; ++i) gpr_assert(gpr_array_item(v1, i) == i);
+    for (i=0; i<100; ++i) gpr_array_push_back(int, &v1, i);
+    for (i=0; i<100; ++i) gpr_assert(gpr_array_item(&v1, i) == i);
   }
-  gpr_assert(gpr_array_size(v1) == 100);
+  gpr_assert(gpr_array_size(&v1) == 100);
 
-  gpr_array_remove(v1, 50);
-  gpr_assert(gpr_array_size(v1) == 99);
+  gpr_array_remove(&v1, 50);
+  gpr_assert(gpr_array_size(&v1) == 99);
 
-  gpr_array_destroy(v1);
-  gpr_array_destroy(v2);
+  gpr_array_destroy(&v1);
+  gpr_array_destroy(&v2);
   gpr_memory_shutdown();
 }
 
@@ -118,10 +118,10 @@ void test_tmp_allocator()
     gpr_array_t(int)         ar;
 
     gpr_tmp_allocator_init(a, 128);
-    gpr_array_init(int, ar, a);
+    gpr_array_init(int, &ar, a);
     {
       int i;
-      for (i=0; i<100; ++i) gpr_array_push_back(int, ar, i);
+      for (i=0; i<100; ++i) gpr_array_push_back(int, &ar, i);
     }
     gpr_allocate(a, 2*1024);
     gpr_tmp_allocator_destroy(a);
@@ -132,64 +132,57 @@ void test_tmp_allocator()
 // ---------------------------------------------------------------
 // ID lookup table test
 // ---------------------------------------------------------------
-/*
-typedef struct {
-  I32 val;
-} entry;
 
-GPR_IDLUT_INIT(entry)
-
-  void test_idlut()
+void test_idlut()
 {
-  entry new_entry;
-  U32   id1, id2, id3;
-  gpr_idlut_t(entry) table;
+  I32 item;
+  U64   id1, id2, id3;
+  gpr_idlut_t t;
   gpr_allocator_t *a;
+  gpr_array_t(gpr_idlut_index_t) test;
 
   gpr_memory_init(512);
   a = gpr_default_allocator;
 
-  gpr_idlut_init(entry, &table, a, 3);
 
-  // max items should be the next power of 2
-  gpr_assert(table.max_items == 4);
+  gpr_idlut_init(I32, &t, a);
+  gpr_idlut_reserve(I32, &t, 1280);
 
-  new_entry.val = 1;
-  id1 = gpr_idlut_add(entry, &table, &new_entry);
-  gpr_assert(gpr_idlut_has(entry, &table, id1));
-  gpr_assert(gpr_idlut_lookup(entry, &table, id1)->val == 1);
+  item = 1;
+  id1 = gpr_idlut_add(I32, &t, &item);
+  gpr_assert(gpr_idlut_has(I32, &t, id1));
+  gpr_assert(*gpr_idlut_lookup(I32, &t, id1) == 1);
 
-  new_entry.val = 2;
-  id2 = gpr_idlut_add(entry, &table, &new_entry);
-  gpr_assert(gpr_idlut_has(entry, &table, id2));
-  gpr_assert(gpr_idlut_lookup(entry, &table, id2)->val == 2);
+  item = 2;
+  id2 = gpr_idlut_add(I32, &t, &item);
+  gpr_assert(gpr_idlut_has(I32, &t, id2));
+  gpr_assert(*gpr_idlut_lookup(I32, &t, id2)== 2);
 
-  new_entry.val = 3;
-  id3 = gpr_idlut_add(entry, &table, &new_entry);
-  gpr_assert(gpr_idlut_has(entry, &table, id3));
-  gpr_assert(gpr_idlut_lookup(entry, &table, id3)->val == 3);
+  item = 3;
+  id3 = gpr_idlut_add(I32, &t, &item);
+  gpr_assert(gpr_idlut_has(I32, &t, id3));
+  gpr_assert(*gpr_idlut_lookup(I32, &t, id3) == 3);
 
-  gpr_idlut_swap(entry, &table, id3, id1);
-  gpr_assert(table.items[0].value.val == 3);
-  gpr_assert(gpr_idlut_lookup(entry, &table, id3)->val == 3);
+  gpr_idlut_remove(I32, &t, id1);
+  gpr_assert(!gpr_idlut_has(I32, &t, id1));
 
-  gpr_idlut_swap_to(entry, &table, id2, 0);
-  gpr_assert(table.items[0].value.val == 2);
-  gpr_assert(gpr_idlut_lookup(entry, &table, id2)->val == 2);
+  {
+    int i;
+    for (i=0; i<100; ++i) gpr_idlut_add(I32, &t, &item);
+  }
 
-  gpr_idlut_remove(entry, &table, id1);
-  gpr_assert(!gpr_idlut_has(entry, &table, id1));
+  gpr_idlut_remove(I32, &t, id2);
+  gpr_assert(!gpr_idlut_has(I32, &t, id2));
 
-  gpr_idlut_remove(entry, &table, id2);
-  gpr_assert(!gpr_idlut_has(entry, &table, id2));
+  gpr_idlut_remove(I32, &t, id3);
+  gpr_assert(!gpr_idlut_has(I32, &t, id3));
 
-  gpr_idlut_remove(entry, &table, id3);
-  gpr_assert(!gpr_idlut_has(entry, &table, id3));
+  gpr_assert(gpr_idlut_end(I32, &t) - gpr_idlut_begin(I32, &t) == 100);
 
-  gpr_idlut_destroy(entry, &table);
+  gpr_idlut_destroy(I32, &t);
 
   gpr_memory_shutdown();
-}*/
+}
 
 // ---------------------------------------------------------------
 // Hash table tests
@@ -255,12 +248,12 @@ void test_multi_hash()
     gpr_tmp_allocator_128_t ta;
     gpr_array_t(I32) arr;
     gpr_tmp_allocator_init(&ta, 128);
-    gpr_array_init(I32, arr, (gpr_allocator_t*)&ta);
+    gpr_array_init(I32, &arr, (gpr_allocator_t*)&ta);
 
-    gpr_multi_hash_get(I32, &h, 0, arr);
+    gpr_multi_hash_get(I32, &h, 0, &arr);
 
 
-    gpr_assert(gpr_array_size(arr) == 3);
+    gpr_assert(gpr_array_size(&arr) == 3);
 
     gpr_multi_hash_remove(I32, &h, gpr_multi_hash_find_first(I32, &h, 0, 0));
     gpr_assert(gpr_multi_hash_count(I32, &h,0) == 2);
@@ -281,12 +274,12 @@ void test_multi_hash()
 
 int main()
 {
-  //test_memory();
-  //test_scratch();
-  //test_tmp_allocator();
-  //test_array();
-  //test_idlut();
-  //test_hash();
+  test_memory();
+  test_scratch();
+  test_tmp_allocator();
+  test_array();
+  test_idlut();
+  test_hash();
   test_multi_hash();
   return 0;
 }

@@ -25,6 +25,7 @@
   <ItemGroup>
     <ClCompile Include="src\gpr_buffer.c" />
     <ClCompile Include="src\gpr_hash.c" />
+    <ClCompile Include="src\gpr_idlut.c" />
     <ClCompile Include="src\gpr_memory.c" />
     <ClCompile Include="src\gpr_tmp_allocator.c" />
     <ClCompile Include="src\test.c" />

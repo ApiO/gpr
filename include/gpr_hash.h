@@ -42,7 +42,7 @@ void *_gpr_hash_end     (gpr_hash_t *h, const U32 s);
 #define gpr_hash_get(type, h, key)          (type*)_gpr_hash_get(h, key)
 #define gpr_hash_set(type, h, key, value)   _gpr_hash_set(h, sizeof(type), key, value)
 #define gpr_hash_remove(type, h, key)       _gpr_hash_remove(h, sizeof(type), key)
-#define gpr_hash_reserve(type, h, capacity) _gpr_hash_reserve(h, sizeof(type), camacity)
+#define gpr_hash_reserve(type, h, capacity) _gpr_hash_reserve(h, sizeof(type), capacity)
 #define gpr_hash_begin(type, h)             (type*)_gpr_hash_begin(h)
 #define gpr_hash_end(type, h)               (type*)_gpr_hash_enf(h, sizeof(type))
 
