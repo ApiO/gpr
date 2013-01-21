@@ -16,16 +16,7 @@ static I32 full(gpr_idlut_t *t)
 static void grow(gpr_idlut_t *t, const U32 s, U32 capacity)
 {
   U32 i = gpr_array_size(&t->indices);
-  //gpr_array_resize(index_t, &t->indices, capacity);
-  if(capacity > (&t->indices)->capacity)
-  {
-    index_t *tmp = (&t->indices)->data;                                             
-    (&t->indices)->capacity = (capacity);                                               
-    (&t->indices)->data = (index_t*)gpr_allocate((&t->indices)->allocator, sizeof(index_t)*(capacity)); 
-    memcpy((&t->indices)->data, tmp, sizeof(index_t)*(&t->indices)->size);                    
-    gpr_deallocate((&t->indices)->allocator, tmp);
-  }
-  (&t->indices)->size = capacity;
+  gpr_array_resize(index_t, &t->indices, capacity);
 
   gpr_array_reserve(U64, &t->ids, capacity);
   gpr_buffer_reserve(&t->items, capacity*s);

@@ -139,11 +139,9 @@ void test_idlut()
   U64   id1, id2, id3;
   gpr_idlut_t t;
   gpr_allocator_t *a;
-  gpr_array_t(gpr_idlut_index_t) test;
 
   gpr_memory_init(512);
   a = gpr_default_allocator;
-
 
   gpr_idlut_init(I32, &t, a);
   gpr_idlut_reserve(I32, &t, 1280);
@@ -168,7 +166,9 @@ void test_idlut()
 
   {
     int i;
-    for (i=0; i<100; ++i) gpr_idlut_add(I32, &t, &item);
+    U64 k;
+    for (i=0; i<100; ++i) 
+      k = gpr_idlut_add(I32, &t, &item);
   }
 
   gpr_idlut_remove(I32, &t, id2);
@@ -252,7 +252,6 @@ void test_multi_hash()
 
     gpr_multi_hash_get(I32, &h, 0, &arr);
 
-
     gpr_assert(gpr_array_size(&arr) == 3);
 
     gpr_multi_hash_remove(I32, &h, gpr_multi_hash_find_first(I32, &h, 0, 0));
@@ -274,12 +273,12 @@ void test_multi_hash()
 
 int main()
 {
-  test_memory();
-  test_scratch();
-  test_tmp_allocator();
-  test_array();
+  //test_memory();
+  //test_scratch();
+  //test_tmp_allocator();
+  //test_array();
   test_idlut();
-  test_hash();
-  test_multi_hash();
+  //test_hash();
+  //test_multi_hash();
   return 0;
 }
