@@ -5,6 +5,10 @@
 #include "gpr_array.h"
 #include "gpr_buffer.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct
 {
   U64 key;
@@ -84,3 +88,7 @@ do {                                                      \
 } while(0)
 
 #endif // GPR_HASH_H
+
+#ifdef __cplusplus
+}
+#endif

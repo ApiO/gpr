@@ -12,6 +12,10 @@
 // http://www.altdevblogaday.com/2011/09/23/managing-decoupling-part-4-the-id-lookup-table/
 // -------------------------------------------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct
 {
   U64  id;        // external id
@@ -50,5 +54,10 @@ void *_gpr_idlut_end     (gpr_idlut_t *t, const U32 s);
 #define gpr_idlut_remove(type, t, id)        _gpr_idlut_remove(t, sizeof(type), id)
 #define gpr_idlut_begin(type, t)             (type*)_gpr_idlut_begin(t)
 #define gpr_idlut_end(type, t)               (type*)_gpr_idlut_end(t, sizeof(type))
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif // GPR_IDLUT_H

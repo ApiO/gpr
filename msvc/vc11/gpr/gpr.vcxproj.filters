@@ -23,6 +23,15 @@
     <ClCompile Include="src\gpr_tmp_allocator.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gpr_buffer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gpr_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gpr_idlut.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tinycthread.h">
@@ -50,6 +59,9 @@
       <Filter>Public Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\gpr_hash.h">
+      <Filter>Public Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gpr_buffer.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
   </ItemGroup>

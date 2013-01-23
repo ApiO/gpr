@@ -133,7 +133,7 @@ void test_tmp_allocator()
 // ID lookup table test
 // ---------------------------------------------------------------
 
-#define NUM_INSERT 100
+#define NUM_INSERT 300
 
 void test_idlut()
 {
@@ -148,7 +148,7 @@ void test_idlut()
 
   gpr_idlut_init(I32, &t, a);
 
-  item = 1;
+  /*item = 1;
   id1 = gpr_idlut_add(I32, &t, &item);
   gpr_assert(gpr_idlut_has(I32, &t, id1));
   gpr_assert(*gpr_idlut_lookup(I32, &t, id1) == 1);
@@ -164,21 +164,21 @@ void test_idlut()
   item = 3;
   id3 = gpr_idlut_add(I32, &t, &item);
   gpr_assert(gpr_idlut_has(I32, &t, id3));
-  gpr_assert(*gpr_idlut_lookup(I32, &t, id3) == 3);
+  gpr_assert(*gpr_idlut_lookup(I32, &t, id3) == 3);*/
 
   {
     int i; for (i=0; i<NUM_INSERT; ++i)
       keys[i] = gpr_idlut_add(I32, &t, &i);
   }
 
-  gpr_assert(*gpr_idlut_lookup(I32, &t, id2) == 2);
+ /* gpr_assert(*gpr_idlut_lookup(I32, &t, id2) == 2);
   gpr_idlut_remove(I32, &t, id2);
   gpr_assert(*gpr_idlut_lookup(I32, &t, id3) == 3);
   gpr_idlut_remove(I32, &t, id3);
 
   gpr_assert(gpr_idlut_end(I32, &t) - gpr_idlut_begin(I32, &t) == NUM_INSERT);
   gpr_idlut_remove(I32, &t, keys[0]);
-  gpr_idlut_remove(I32, &t, keys[NUM_INSERT-1]);
+  gpr_idlut_remove(I32, &t, keys[NUM_INSERT-1]);*/
   {
     int i; for (i=1; i<NUM_INSERT-1; ++i)
       gpr_assert(*gpr_idlut_lookup(I32, &t, keys[i]) == i);

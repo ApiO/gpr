@@ -4,6 +4,10 @@
 #include "gpr_types.h"
 #include "gpr_memory.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct
 {
   char *data;
@@ -19,5 +23,9 @@ void  gpr_buffer_resize  (gpr_buffer_t *buf, U32 size);
 char *gpr_buffer_cat     (gpr_buffer_t *buf, char *str);
 char *gpr_buffer_ncat    (gpr_buffer_t *buf, char *src, U32 size);
 char *gpr_buffer_xcat    (gpr_buffer_t *buf, char *format, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // GPR_BUFFER_H
