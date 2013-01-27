@@ -3,10 +3,10 @@
 
 #include "gpr_memory.h"
 
-typedef void *(*allocate_t)       (gpr_allocator_t *self, SZ size, SZ align);
+typedef void *(*allocate_t)       (gpr_allocator_t *self, U32 size, U32 align);
 typedef void  (*deallocate_t)     (gpr_allocator_t *self, void *p);
-typedef SZ    (*allocated_for_t)  (gpr_allocator_t *self, void *p);
-typedef SZ    (*allocated_tot_t)  (gpr_allocator_t *self);
+typedef U32   (*allocated_for_t)  (gpr_allocator_t *self, void *p);
+typedef U32   (*allocated_tot_t)  (gpr_allocator_t *self);
 
 // allocator definition
 typedef struct gpr_allocator_s
@@ -32,10 +32,10 @@ typedef struct gpr_allocator_s
 
 // aligns p to the specified alignment by moving it forward if necessary and 
 // returns the result.
-static void *gpr_align_forward(void *p, SZ align) 
+static void *gpr_align_forward(void *p, U32 align) 
 {
     U8 *pi = (U8*)p;
-    const SZ mod = (SZ)pi % align;
+    const U32 mod = (U32)pi % align;
     if (mod) pi += (align - mod);
     return (void *)pi;
 }

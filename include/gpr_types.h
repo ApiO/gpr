@@ -5,8 +5,6 @@
 
 // short type aliases: please use that
 
-typedef size_t   SZ;
-
 typedef uint8_t  U8;
 typedef  int8_t  I8;
 typedef uint16_t U16;

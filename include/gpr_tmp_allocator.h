@@ -25,7 +25,7 @@ typedef struct                    \
   char            *start;         \
   char            *p;             \
   char            *end;           \
-  SZ               chunk_size;    \
+  U32               chunk_size;    \
   char             buffer[s];     \
 } gpr_tmp_allocator_##s##_t;
 
@@ -37,7 +37,7 @@ GPR_TMP_ALLOCATOR_INIT(1024)
 GPR_TMP_ALLOCATOR_INIT(2048)
 GPR_TMP_ALLOCATOR_INIT(4096)
 
-void gpr_tmp_allocator_init    (void *a, SZ size);
+void gpr_tmp_allocator_init    (void *a, U32 size);
 void gpr_tmp_allocator_destroy (void *a);
 
 #ifdef __cplusplus

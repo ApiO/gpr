@@ -1,4 +1,5 @@
 #include <malloc.h>
+#include <memory.h>
 #include "gpr_assert.h"
 #include "gpr_memory.h"
 #include "gpr_allocator.h"
@@ -7,12 +8,12 @@
 // Global memory functions
 // ---------------------------------------------------------------
 
-void *gpr_allocate(gpr_allocator_t *a, SZ size) 
+void *gpr_allocate(gpr_allocator_t *a, U32 size) 
 {
   return a->allocate(a, size, GPR_DEFAULT_ALIGN);
 }
 
-void *gpr_allocate_align(gpr_allocator_t *a, SZ size, SZ align) 
+void *gpr_allocate_align(gpr_allocator_t *a, U32 size, U32 align) 
 {
   return a->allocate(a, size, align);
 }
@@ -22,19 +23,29 @@ void gpr_deallocate(gpr_allocator_t *a, void*p)
   a->deallocate(a, p);
 }
 
-SZ gpr_allocated_tot(gpr_allocator_t *a)          
+U32 gpr_allocated_tot(gpr_allocator_t *a)          
 {
   return a->allocated_tot(a);
 }
 
-SZ gpr_allocated_for(gpr_allocator_t *a, void *p)  
+U32 gpr_allocated_for(gpr_allocator_t *a, void *p)  
 {
   return a->allocated_for(a,p);
 }
 
+char *gpr_strdup(char *str, gpr_allocator_t *a)
+{
+  U32 i = 0;
+  char *res;
+  while(str[i++] != '\0');
+  res = (char*)gpr_allocate(a, i);
+  memcpy(res, str, i);
+  return res;
+}
+
 typedef struct
 {
-  SZ size;
+  U32 size;
 } header_t;
 
 // in case of aligned allocation, use this value as padding
@@ -45,7 +56,7 @@ U32 HEADER_PAD_VALUE = 0xffffffffu;
 // ---------------------------------------------------------------
 
 // given a pointer to the header, returns a pointer to the data that follows it
-void *data_pointer(header_t *header, SZ align) {
+void *data_pointer(header_t *header, U32 align) {
   void *p = header + 1;
   return gpr_align_forward(p, align);
 }
@@ -60,7 +71,7 @@ header_t *header(void *data)
 
 // stores the size in the header and pads with HEADER_PAD_VALUE up to the
 // data pointer
-void fill(header_t *header, void *data, SZ size)
+void fill(header_t *header, void *data, U32 size)
 {
   char *d = (char*)data;
   char *p = (char*)(header + 1);
@@ -78,17 +89,17 @@ void fill(header_t *header, void *data, SZ size)
 typedef struct
 {
   gpr_allocator_t base;
-  SZ              total_allocated;
+  U32              total_allocated;
 } malloc_t;
 
 // returns the size to allocate from malloc() for a given size and align
-SZ size_with_padding(SZ size, SZ align) {
+U32 size_with_padding(U32 size, U32 align) {
   return size + align + sizeof(header_t);
 }
 
-void *malloc_allocate(malloc_t *a, SZ size, SZ align)
+void *malloc_allocate(malloc_t *a, U32 size, U32 align)
 {
-  const SZ ts = size_with_padding(size, align);
+  const U32 ts = size_with_padding(size, align);
   header_t *h = (header_t*)malloc(ts);
   void     *p = data_pointer(h, align);
 
@@ -109,12 +120,12 @@ void malloc_deallocate(malloc_t *a, void *p)
   free(h);
 }
 
-SZ malloc_allocated_for(malloc_t *a, void *p)
+U32 malloc_allocated_for(malloc_t *a, void *p)
 {
   return header(p)->size;
 }
 
-SZ malloc_allocated_tot(malloc_t *a)
+U32 malloc_allocated_tot(malloc_t *a)
 {
   return a->total_allocated;
 }
@@ -163,7 +174,7 @@ int in_use(scratch_t *a, void *p)
   return pc >= a->free || pc < a->allocate;
 }
 
-void *scratch_allocate(scratch_t *a, SZ size, SZ align)
+void *scratch_allocate(scratch_t *a, U32 size, U32 align)
 {
   char *p = a->allocate;
   header_t *h = (header_t*)p;
@@ -219,18 +230,18 @@ void scratch_deallocate(scratch_t *a, void *p)
   }
 }
 
-SZ scratch_allocated_for(scratch_t *a, void *p)
+U32 scratch_allocated_for(scratch_t *a, void *p)
 {
   header_t *h = header(p);
   return h->size - ((char*)p - (char*)h);
 }
 
-SZ scratch_allocated_tot(scratch_t *a)
+U32 scratch_allocated_tot(scratch_t *a)
 {
   return a->end - a->begin;
 }
 
-void scratch_init(scratch_t *a, SZ size, gpr_allocator_t *backing)
+void scratch_init(scratch_t *a, U32 size, gpr_allocator_t *backing)
 {
   a->backing  = backing;
   a->begin    = (char*)gpr_allocate(a->backing, size);
@@ -260,7 +271,7 @@ char buffer[sizeof(malloc_t) + sizeof(scratch_t)];
 gpr_allocator_t *gpr_default_allocator;
 gpr_allocator_t *gpr_scratch_allocator;
 
-void gpr_memory_init(SZ scratch_buffer_size)
+void gpr_memory_init(U32 scratch_buffer_size)
 {
   // default allocator initialization
   char *p = buffer;

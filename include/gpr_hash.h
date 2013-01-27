@@ -43,12 +43,12 @@ void *_gpr_hash_end     (gpr_hash_t *h, const U32 s);
 #define gpr_hash_init(type, h, alct)        _gpr_hash_init(h, sizeof(type), alct)
 #define gpr_hash_destroy(type, h)           _gpr_hash_destroy(h)
 #define gpr_hash_has(type, h, key)          _gpr_hash_has(h, key)
-#define gpr_hash_get(type, h, key)          (type*)_gpr_hash_get(h, key)
+#define gpr_hash_get(type, h, key)          ((type*)_gpr_hash_get(h, key))
 #define gpr_hash_set(type, h, key, value)   _gpr_hash_set(h, sizeof(type), key, value)
 #define gpr_hash_remove(type, h, key)       _gpr_hash_remove(h, sizeof(type), key)
 #define gpr_hash_reserve(type, h, capacity) _gpr_hash_reserve(h, sizeof(type), capacity)
-#define gpr_hash_begin(type, h)             (type*)_gpr_hash_begin(h)
-#define gpr_hash_end(type, h)               (type*)_gpr_hash_enf(h, sizeof(type))
+#define gpr_hash_begin(type, h)             ((type*)_gpr_hash_begin(h))
+#define gpr_hash_end(type, h)               ((type*)_gpr_hash_enf(h, sizeof(type)))
 
 // ---------------------------------------------------------------
 // Multi Hash
@@ -70,8 +70,8 @@ void  _gpr_multi_hash_remove_all (gpr_hash_t *h, const U32 s, U64 key);
 
 #define gpr_multi_hash_init(type, h, alct)          _gpr_hash_init(h, sizeof(type), alct)
 #define gpr_multi_hash_destroy(type, h)             _gpr_hash_destroy(h)
-#define gpr_multi_hash_find_first(type, h, it, key) (type*)_gpr_multi_hash_find_first(h, it, key)
-#define gpr_multi_hash_find_next(type, h, it)       (type*)_gpr_multi_hash_find_next(h, it)
+#define gpr_multi_hash_find_first(type, h, it, key) ((type*)_gpr_multi_hash_find_first(h, it, key))
+#define gpr_multi_hash_find_next(type, h, it)       ((type*)_gpr_multi_hash_find_next(h, it))
 #define gpr_multi_hash_count(type, h, key)          _gpr_multi_hash_count(h, key)
 #define gpr_multi_hash_insert(type, h, key, value)  _gpr_multi_hash_insert(h, sizeof(type), key, value)
 #define gpr_multi_hash_remove(type, h, e)           _gpr_multi_hash_remove(h, sizeof(type), e)

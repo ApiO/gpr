@@ -211,8 +211,7 @@ void _gpr_hash_set(gpr_hash_t *h, const U32 s, U64 key, const void *value)
   if(index->value_pos == END_OF_LIST)
   {
     // create a new value
-    index->value_pos = 
-      gpr_buffer_ncat(&h->values, (char*)value, s) - h->values.data;
+    index->value_pos = gpr_buffer_ncat(&h->values, (char*)value, s);
     gpr_array_push_back(U64, &h->keys, key);
     ++h->num_values;
   } else {
@@ -300,7 +299,7 @@ void _gpr_multi_hash_insert(gpr_hash_t *h, const U32 s, U64 key, const void *val
     rehash(h, s, 4);
 
   gpr_array_push_back(U64, &h->keys, key);
-  make_index(h, key,  gpr_buffer_ncat(&h->values, (char*)value, s) - h->values.data);
+  make_index(h, key,  gpr_buffer_ncat(&h->values, (char*)value, s));
 
   ++h->num_values;
 

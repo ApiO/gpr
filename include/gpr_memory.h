@@ -13,18 +13,22 @@ extern "C" {
 typedef struct gpr_allocator_s gpr_allocator_t;
 
 // memory allocation functions
-void *gpr_allocate       (gpr_allocator_t *a, SZ size);
-void *gpr_allocate_align (gpr_allocator_t *a, SZ size, SZ align);
+void *gpr_allocate       (gpr_allocator_t *a, U32 size);
+void *gpr_allocate_align (gpr_allocator_t *a, U32 size, U32 align);
 void  gpr_deallocate     (gpr_allocator_t *a, void*p);
-SZ    gpr_allocated_tot  (gpr_allocator_t *a);
-SZ    gpr_allocated_for  (gpr_allocator_t *a, void*p);
+U32   gpr_allocated_tot  (gpr_allocator_t *a);
+U32   gpr_allocated_for  (gpr_allocator_t *a, void*p);
+
+// allocate memory to store the string str and returns its pointer
+// must be freed with gpr_deallocate
+char *gpr_strdup(char *str, gpr_allocator_t *a);
 
 // global memory allocators
 extern gpr_allocator_t *gpr_default_allocator;
 extern gpr_allocator_t *gpr_scratch_allocator;
 
 // initializes/shuts down the global memory allocators
-void gpr_memory_init     (SZ scratch_buffer_size);
+void gpr_memory_init     (U32 scratch_buffer_size);
 void gpr_memory_shutdown ();
 
 #ifdef __cplusplus
