@@ -23,7 +23,7 @@ typedef struct
                    indices;
   gpr_array_t(U64) keys;
   gpr_buffer_t     values;
-  I32              num_values;
+  U32              num_values;
 } gpr_hash_t;
 
 // ---------------------------------------------------------------

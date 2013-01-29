@@ -22,7 +22,7 @@ typedef struct
 
 static I32 full(gpr_hash_t *h)
 {
-  return h->num_values >= (I32)(gpr_array_size(&h->buckets)*MAX_LOAD_FACTOR);
+  return h->num_values >= (U32)(gpr_array_size(&h->buckets)*MAX_LOAD_FACTOR);
 }
 
 static void find_index(gpr_hash_t *h, U64 key, find_result_t *fr)
