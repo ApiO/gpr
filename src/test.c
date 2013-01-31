@@ -9,6 +9,7 @@
 #include "gpr_tmp_allocator.h"
 #include "gpr_hash.h"
 #include "gpr_murmur_hash.h"
+#include "gpr_tree.h"
 
 // ---------------------------------------------------------------
 // Default allocator tests
@@ -273,6 +274,10 @@ void test_multi_hash()
   gpr_memory_shutdown();
 }
 
+// ---------------------------------------------------------------
+// Murmur Hash
+// ---------------------------------------------------------------
+
 void test_murmur_hash()
 {
   const char *s = "test_string";
@@ -281,18 +286,51 @@ void test_murmur_hash()
 }
 
 // ---------------------------------------------------------------
+// Tree
+// ---------------------------------------------------------------
+
+void test_tree()
+{
+  gpr_tree_t t;
+  I32 val = 0;
+  U64 root, n1, n2, n3, n31, n32;
+
+  gpr_memory_init(4*1024);
+  root = _gpr_tree_init(&t, sizeof(I32), gpr_default_allocator, &val);
+
+  val = 1;  n1  = gpr_tree_add_child(I32, &t, root, &val);
+  val = 2;  n2  = gpr_tree_add_child(I32, &t, root, &val);
+  val = 3;  n3  = gpr_tree_add_child(I32, &t, root, &val);
+  val = 31; n31 = gpr_tree_add_child(I32, &t, n3, &val);
+  val = 32; n32 = gpr_tree_add_child(I32, &t, n3, &val);
+  
+  gpr_assert(*gpr_tree_get(I32, &t, n3) == 3);
+  gpr_assert(*gpr_tree_get(I32, &t, n31) == 31);
+  gpr_assert(*gpr_tree_get(I32, &t, n32) == 32);
+  gpr_tree_remove(I32, &t, n3);
+  gpr_assert(!gpr_tree_has(I32, &t, n3));
+  gpr_assert(!gpr_tree_has(I32, &t, n31));
+  gpr_assert(!gpr_tree_has(I32, &t, n32));
+
+  gpr_tree_destroy(I32, &t);
+
+  gpr_memory_shutdown();
+}
+
+// ---------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------
 
 int main()
 {
-  //test_memory();
-  //test_scratch();
-  //test_tmp_allocator();
-  //test_array();
-  //test_idlut();
-  //test_hash();
-  //test_multi_hash();
+  test_memory();
+  test_scratch();
+  test_tmp_allocator();
+  test_array();
+  test_idlut();
+  test_hash();
+  test_multi_hash();
   test_murmur_hash();
+  test_tree();
   return 0;
 }

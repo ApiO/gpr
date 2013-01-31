@@ -70,5 +70,8 @@
     <ClInclude Include="include\gpr_murmur_hash.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\gpr_math.h">
+      <Filter>Public Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

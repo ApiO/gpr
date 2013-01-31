@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-U64 gpr_murmur_hash_64(const void *key, U32 len, U64 seed);
+U64 gpr_murmur_hash_64 (const void *key, U32 len, U64 seed);
 
 #ifdef __cplusplus
 }
