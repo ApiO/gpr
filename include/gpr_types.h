@@ -47,7 +47,7 @@ static U64 gpr_swap_U64(U64 value)
 
 static F32 gpr_swap_F32(F32 value)
 {
-  union U32F32
+  union
   {
     U32 asU32;
     F32 asF32;
@@ -61,7 +61,7 @@ static F32 gpr_swap_F32(F32 value)
 
 static F64 gpr_swap_F64(F64 value)
 {
-  union U64F64
+  union
   {
     U64 asU64;
     F64 asF64;

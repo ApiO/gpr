@@ -87,8 +87,9 @@ do {                                                      \
   }                                                       \
 } while(0)
 
-#endif // GPR_HASH_H
-
 #ifdef __cplusplus
 }
 #endif
+
+#endif // GPR_HASH_H
+
