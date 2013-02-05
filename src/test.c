@@ -10,6 +10,7 @@
 #include "gpr_hash.h"
 #include "gpr_murmur_hash.h"
 #include "gpr_tree.h"
+#include "gpr_json.h"
 
 // ---------------------------------------------------------------
 // Default allocator tests
@@ -296,14 +297,14 @@ void test_tree()
   U64 root, n1, n2, n3, n31, n32;
 
   gpr_memory_init(4*1024);
-  root = _gpr_tree_init(&t, sizeof(I32), gpr_default_allocator, &val);
+  root = gpr_tree_init(I32, &t, gpr_default_allocator, &val);
 
   val = 1;  n1  = gpr_tree_add_child(I32, &t, root, &val);
   val = 2;  n2  = gpr_tree_add_child(I32, &t, root, &val);
   val = 3;  n3  = gpr_tree_add_child(I32, &t, root, &val);
   val = 31; n31 = gpr_tree_add_child(I32, &t, n3, &val);
   val = 32; n32 = gpr_tree_add_child(I32, &t, n3, &val);
-  
+
   gpr_assert(*gpr_tree_get(I32, &t, n3) == 3);
   gpr_assert(*gpr_tree_get(I32, &t, n31) == 31);
   gpr_assert(*gpr_tree_get(I32, &t, n32) == 32);
@@ -317,20 +318,50 @@ void test_tree()
   gpr_memory_shutdown();
 }
 
+void test_json()
+{
+  gpr_buffer_t buf;
+  gpr_json_t jsn;
+  U64 entity;
+
+  gpr_memory_init(1024*4);
+  entity = gpr_json_init(&jsn, gpr_default_allocator);
+
+  gpr_json_set_integer(&jsn, entity, "x", 10);
+  gpr_json_set_integer(&jsn, entity, "y", 20);
+  {
+    U64 matrix = gpr_json_create_object(&jsn, entity, "matrix3");
+    //U64 mx = gpr_json_create_array(&jsn, matrix, "x");
+    //U64 my = gpr_json_create_array(&jsn, matrix, "y");
+    //U64 mz = gpr_json_create_array(&jsn, matrix, "z");
+  }
+  gpr_json_set_integer(&jsn, entity, "z", 666);
+  gpr_json_set_number(&jsn, entity, "z", 0.666);
+
+  gpr_buffer_init(&buf, gpr_default_allocator);
+  gpr_json_write(&jsn, entity, &buf, 1);
+  printf(buf.data);
+
+  gpr_buffer_destroy(&buf);
+  gpr_json_destroy(&jsn);
+  gpr_memory_shutdown();
+}
+
 // ---------------------------------------------------------------
 // MAIN
 // ---------------------------------------------------------------
 
 int main()
 {
-  test_memory();
-  test_scratch();
-  test_tmp_allocator();
-  test_array();
-  test_idlut();
-  test_hash();
-  test_multi_hash();
-  test_murmur_hash();
-  test_tree();
+  //test_memory();
+  //test_scratch();
+  //test_tmp_allocator();
+  //test_array();
+  //test_idlut();
+  //test_hash();
+  //test_multi_hash();
+  //test_murmur_hash();
+  //test_tree();
+  test_json();
   return 0;
 }
