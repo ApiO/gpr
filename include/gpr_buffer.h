@@ -20,9 +20,9 @@ void  gpr_buffer_destroy (gpr_buffer_t *buf);
 void  gpr_buffer_clear   (gpr_buffer_t *buf);
 void  gpr_buffer_reserve (gpr_buffer_t *buf, U32 capacity);
 void  gpr_buffer_resize  (gpr_buffer_t *buf, U32 size);
-U32   gpr_buffer_cat     (gpr_buffer_t *buf, char *str);
-U32   gpr_buffer_ncat    (gpr_buffer_t *buf, char *src, U32 size);
-U32   gpr_buffer_xcat    (gpr_buffer_t *buf, char *format, ...);
+U32   gpr_buffer_cat     (gpr_buffer_t *buf, const char *str);
+U32   gpr_buffer_ncat    (gpr_buffer_t *buf, const char *src, U32 size);
+U32   gpr_buffer_xcat    (gpr_buffer_t *buf, const char *format, ...);
 
 #ifdef __cplusplus
 }

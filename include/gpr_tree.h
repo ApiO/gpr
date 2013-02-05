@@ -42,7 +42,7 @@ void *_gpr_tree_step        (gpr_tree_t *t, gpr_tree_it *it, U64 id);
 void *_gpr_tree_begin       (gpr_tree_t *t);
 void *_gpr_tree_end         (gpr_tree_t *t, const U32 s);
 
-#define gpr_tree_init(type, t, alct)        _gpr_tree_init(t, sizeof(type), alct)
+#define gpr_tree_init(type, t, alct, value) _gpr_tree_init(t, sizeof(type), alct, value)
 #define gpr_tree_destroy(type, t)           _gpr_tree_destroy(t)
 #define gpr_tree_reserve(type, t, capacity) _gpr_tree_reserve(t, sizeof(type), capacity)
 

@@ -50,7 +50,7 @@ void *_gpr_idlut_end     (gpr_idlut_t *t, const U32 s);
 #define gpr_idlut_reserve(type, t, capacity) _gpr_idlut_reserve(t, sizeof(type), capacity)
 #define gpr_idlut_add(type, t, item)         _gpr_idlut_add(t, sizeof(type), item) 
 #define gpr_idlut_has(type, t, id)           _gpr_idlut_has(t, id)
-#define gpr_idlut_lookup(type, t, id)        ((type*)_gpr_idlut_lookup(t, id))
+#define gpr_idlut_lookup(type, t, id)        ((type*)_gpr_idlut_lookup(t, (id)))
 #define gpr_idlut_remove(type, t, id)        _gpr_idlut_remove(t, sizeof(type), id)
 #define gpr_idlut_begin(type, t)             ((type*)_gpr_idlut_begin(t))
 #define gpr_idlut_end(type, t)               ((type*)_gpr_idlut_end(t, sizeof(type)))

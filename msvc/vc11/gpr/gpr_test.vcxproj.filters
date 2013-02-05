@@ -41,6 +41,9 @@
     <ClCompile Include="src\gpr_tree.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gpr_json.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\tinycthread.h">
@@ -81,6 +84,9 @@
 =======
     <ClInclude Include="include\gpr_tree.h">
 >>>>>>> other
+      <Filter>Public Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gpr_json.h">
       <Filter>Public Header Files</Filter>
     </ClInclude>
   </ItemGroup>

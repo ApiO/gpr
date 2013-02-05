@@ -51,14 +51,14 @@ void gpr_buffer_resize(gpr_buffer_t *buf, U32 size)
     buf->data[size] = '\0';
 }
 
-U32 gpr_buffer_cat(gpr_buffer_t *buf, char *str)
+U32 gpr_buffer_cat(gpr_buffer_t *buf, const char *str)
 {
   U32 size = 0;
   while (str[size] != '\0') ++size;
   return gpr_buffer_ncat(buf, str, size);
 }
 
-U32 gpr_buffer_ncat(gpr_buffer_t *buf, char *src, U32 size)
+U32 gpr_buffer_ncat(gpr_buffer_t *buf, const char *src, U32 size)
 {
   U32 pos = buf->size;
 
@@ -72,7 +72,7 @@ U32 gpr_buffer_ncat(gpr_buffer_t *buf, char *src, U32 size)
 
 #define XCAT_BUFFER_SIZE 256
 
-U32 gpr_buffer_xcat(gpr_buffer_t *buf, char *format, ...)
+U32 gpr_buffer_xcat(gpr_buffer_t *buf, const char *format, ...)
 {
   char buffer[XCAT_BUFFER_SIZE];
   U32     n;
