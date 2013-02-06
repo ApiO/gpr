@@ -17,25 +17,25 @@
 extern "C" {
 #endif
 
-#define GPR_TMP_ALLOCATOR_INIT(s) \
-typedef struct                    \
-{                                 \
-  gpr_allocator_t  base;          \
-  gpr_allocator_t *backing;       \
-  char            *start;         \
-  char            *p;             \
-  char            *end;           \
-  U32               chunk_size;    \
-  char             buffer[s];     \
+#define GPR_TMP_ALLOCATOR_DECLARE(s) \
+typedef struct                       \
+{                                    \
+  gpr_allocator_t  base;             \
+  gpr_allocator_t *backing;          \
+  char            *start;            \
+  char            *p;                \
+  char            *end;              \
+  U32              chunk_size;       \
+  char             buffer[s];        \
 } gpr_tmp_allocator_##s##_t;
 
-GPR_TMP_ALLOCATOR_INIT(64)
-GPR_TMP_ALLOCATOR_INIT(128)
-GPR_TMP_ALLOCATOR_INIT(256)
-GPR_TMP_ALLOCATOR_INIT(512)
-GPR_TMP_ALLOCATOR_INIT(1024)
-GPR_TMP_ALLOCATOR_INIT(2048)
-GPR_TMP_ALLOCATOR_INIT(4096)
+GPR_TMP_ALLOCATOR_DECLARE(64)
+GPR_TMP_ALLOCATOR_DECLARE(128)
+GPR_TMP_ALLOCATOR_DECLARE(256)
+GPR_TMP_ALLOCATOR_DECLARE(512)
+GPR_TMP_ALLOCATOR_DECLARE(1024)
+GPR_TMP_ALLOCATOR_DECLARE(2048)
+GPR_TMP_ALLOCATOR_DECLARE(4096)
 
 void gpr_tmp_allocator_init    (void *a, U32 size);
 void gpr_tmp_allocator_destroy (void *a);

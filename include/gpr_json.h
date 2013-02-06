@@ -18,8 +18,6 @@ typedef struct
 {
   gpr_idlut_t  nodes;
   gpr_hash_t   kv_access;
-  gpr_hash_t   vk_access;
-  gpr_buffer_t key_strings;
 } gpr_json_t;
 
 typedef enum
@@ -67,7 +65,7 @@ void gpr_json_set(gpr_json_t *jsn, U64 obj, const char *member,
 #define gpr_json_set_false(jsn,obj,member)     gpr_json_set(jsn,obj,member,GPR_JSON_FALSE   ,0)
 #define gpr_json_set_boolean(jsn,obj,member,b) gpr_json_set(jsn,obj,member,(b!=0)           ,0)
 #define gpr_json_set_integer(jsn,obj,member,i) gpr_json_set(jsn,obj,member,GPR_JSON_INTEGER, i)
-#define gpr_json_set_string(jsn,obj,member,s)  gpr_json_set(jsn,obj,member,GPR_JSON_NULL,   (U64)s)
+#define gpr_json_set_string(jsn,obj,member,s)  gpr_json_set(jsn,obj,member,GPR_JSON_STRING, (U64)s)
 #define gpr_json_set_number(jsn,obj,member,n) do{\
 union{U64 asU64; F64 asF64;} _u; _u.asF64 = n; gpr_json_set(jsn,obj,member,GPR_JSON_NUMBER, _u.asU64);\
 } while(0)
@@ -75,6 +73,8 @@ union{U64 asU64; F64 asF64;} _u; _u.asF64 = n; gpr_json_set(jsn,obj,member,GPR_J
 U32           gpr_json_array_size   (gpr_json_t *jsn, U64 arr);
 gpr_json_val *gpr_json_array_get    (gpr_json_t *jsn, U64 arr, U32 i);
 void          gpr_json_array_remove (gpr_json_t *jsn, U64 arr, U32 i);
+
+void gpr_json_array_set(gpr_json_t *jsn, U64 arr, gpr_json_type type, U64 value);
 
 void gpr_json_array_add_null    (gpr_json_t *jsn, U64 arr);
 void gpr_json_array_add_boolean (gpr_json_t *jsn, U64 arr, I32 boolean);

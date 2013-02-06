@@ -8,7 +8,7 @@
 typedef struct
 {
   U64          next;
-  U64          name;
+  char        *name;
   gpr_json_val value;
 } node_t;
 
@@ -16,13 +16,13 @@ static U64 create_node(gpr_json_t *jsn, const char *name,
                        gpr_json_type type, U64 value, U64 parent)
 {
   U64    nid;
-  node_t n, *np;
+  node_t n;
 
-  n.next  = NO_NODE;
-  n.name  = NO_NODE;
-  n.value.type   = type;
+  n.next       = NO_NODE;
+  n.value.type = type;
+  n.name       = name ? gpr_strdup(name, jsn->nodes.items.allocator) : 0;
   if (type == GPR_JSON_STRING) 
-    n.value.string = gpr_strdup((char*)value,jsn->nodes.items.allocator);
+    n.value.string = gpr_strdup((char*)value, jsn->nodes.items.allocator);
   else 
     n.value.object = value;
 
@@ -30,17 +30,8 @@ static U64 create_node(gpr_json_t *jsn, const char *name,
 
   if(parent == NO_NODE) return nid;
 
-  if (name != NULL)
+  if (name)
   {
-    // add the name string of the newly created node in the vk_hash
-    np = gpr_idlut_lookup(node_t, &jsn->nodes, nid);
-    np->name = gpr_murmur_hash_64(name, strlen(name), 0);
-    if(!gpr_hash_has(U32, &jsn->vk_access, np->name))
-    {
-      I32 name_pos = gpr_buffer_ncat(&jsn->key_strings, name, strlen(name)+1);
-      gpr_hash_set(U32, &jsn->vk_access, np->name, &name_pos);
-    }
-
     // add the newly created node into the kv_hash
     gpr_hash_set(U64, &jsn->kv_access, 
       gpr_murmur_hash_64(name, strlen(name), parent), &nid);
@@ -64,13 +55,14 @@ static void remove_node(gpr_json_t *jsn, node_t *node)
 {
 }
 
-static void reset_node(gpr_json_t *jsn, node_t *node)
+static void reset_node(gpr_json_t *jsn, node_t *node, gpr_json_type type, U64 value)
 {
   switch (node->value.type)
   {
   case GPR_JSON_OBJECT:
   case GPR_JSON_ARRAY:
     remove_node(jsn, gpr_idlut_lookup(node_t, &jsn->nodes, node->value.object));
+    value = (U64)gpr_strdup((char *)value, jsn->nodes.items.allocator);
     break;
   case GPR_JSON_STRING:
     gpr_deallocate(jsn->nodes.items.allocator, node->value.string);
@@ -78,23 +70,33 @@ static void reset_node(gpr_json_t *jsn, node_t *node)
   default:
     break;
   }
+  node->value.type   = type;
+  node->value.object = value;
 }
 
 U64 gpr_json_init(gpr_json_t *jsn, gpr_allocator_t *a)
 {
   gpr_idlut_init(node_t, &jsn->nodes,   a);
   gpr_hash_init (U64,    &jsn->kv_access, a);
-  gpr_hash_init (U32,    &jsn->vk_access, a);
-  gpr_buffer_init(&jsn->key_strings, a);
-  return create_node(jsn, NULL, GPR_JSON_OBJECT, NO_NODE, NO_NODE);
+  return create_node(jsn, 0, GPR_JSON_OBJECT, NO_NODE, NO_NODE);
 }
 
 void gpr_json_destroy(gpr_json_t *jsn)
 {
-  gpr_idlut_destroy(gpr_json_t, &jsn->nodes);
-  gpr_hash_destroy (U64,        &jsn->kv_access);
-  gpr_hash_destroy (U32,        &jsn->vk_access);
-  gpr_buffer_destroy(&jsn->key_strings);
+  // destroy strings
+  node_t *n = gpr_idlut_begin(node_t, &jsn->nodes);
+  node_t *m = gpr_idlut_end  (node_t, &jsn->nodes);
+
+  while(n < m)
+  {
+    if(n->value.type == GPR_JSON_STRING) 
+      gpr_deallocate(jsn->nodes.items.allocator, n->value.string);
+    ++n;
+  }
+
+  // destroy containers
+  gpr_idlut_destroy (gpr_json_t, &jsn->nodes);
+  gpr_hash_destroy  (U64,        &jsn->kv_access);
 }
 
 static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32 depth)
@@ -109,15 +111,14 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
     if(formated) 
     {
       int i = 0;
-      if(n->name != NO_NODE) gpr_buffer_cat(buf, "\n");
+      if(n->name) gpr_buffer_cat(buf, "\n");
       while(i++ < depth) gpr_buffer_cat(buf, "  ");
     }
 
-    if(n->name != NO_NODE) 
+    if(n->name) 
     { // display the property name
       gpr_buffer_cat(buf, "\"");
-      gpr_buffer_cat(buf, jsn->key_strings.data + 
-        *gpr_hash_get(U32, &jsn->vk_access, n->name));
+      gpr_buffer_cat(buf, n->name);
       gpr_buffer_cat(buf, "\":");
       if(formated) gpr_buffer_cat(buf, " ");
     }
@@ -129,7 +130,13 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
     case GPR_JSON_NULL:    gpr_buffer_cat (buf, "null");  break;
     case GPR_JSON_INTEGER: gpr_buffer_xcat(buf, "%d", n->value.integer); break;
     case GPR_JSON_NUMBER:  gpr_buffer_xcat(buf, "%f", n->value.number);  break;
-    case GPR_JSON_STRING:  gpr_buffer_cat (buf, n->value.string);        break;
+
+    case GPR_JSON_STRING:
+      gpr_buffer_cat(buf, "\"");
+      gpr_buffer_cat (buf, n->value.string);
+      gpr_buffer_cat(buf, "\"");
+      break;
+
     case GPR_JSON_OBJECT:  
       gpr_buffer_cat (buf, "{");
       if(n->value.object != NO_NODE) 
@@ -142,14 +149,15 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
       }
       gpr_buffer_cat(buf, "}");
       break;
+
     case GPR_JSON_ARRAY:
       gpr_buffer_cat (buf, "[");
       if(n->value.object != NO_NODE) 
         write(jsn, n->value.arr, buf, formated, depth+1);
       gpr_buffer_cat(buf, "]");
       break;
-    default:
-      break;
+
+    default: break;
     }
     nid = n->next;
   }
@@ -197,11 +205,7 @@ void gpr_json_set(gpr_json_t *jsn, U64 obj, const char *member, gpr_json_type ty
     gpr_murmur_hash_64(member, strlen(member), obj));
 
   if(node_id != NULL)
-  {
-    node_t *n = gpr_idlut_lookup(node_t, &jsn->nodes, *node_id);
-    reset_node(jsn, n);
-    n->value.type   = type;
-    n->value.object = value;
-  }
-  else create_node(jsn, member, type, value, obj);
+    reset_node(jsn, gpr_idlut_lookup(node_t, &jsn->nodes, *node_id), type, value);
+  else 
+    create_node(jsn, member, type, value, obj);
 }

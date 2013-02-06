@@ -7,6 +7,7 @@
 #include "gpr_memory.h"
 #include "gpr_array.h"
 #include "gpr_tmp_allocator.h"
+#include "gpr_pool_allocator.h"
 #include "gpr_hash.h"
 #include "gpr_murmur_hash.h"
 #include "gpr_tree.h"
@@ -128,6 +129,37 @@ void test_tmp_allocator()
     }
     gpr_allocate(a, 2*1024);
     gpr_tmp_allocator_destroy(a);
+  }
+  gpr_memory_shutdown();
+}
+
+// ---------------------------------------------------------------
+// Temporary allocator test
+// ---------------------------------------------------------------
+
+void test_pool_allocator()
+{
+  gpr_memory_init(4*1024*1024);
+  {
+    gpr_pool_allocator_t  pa;
+    gpr_allocator_t      *a = (gpr_allocator_t*)&pa;
+    gpr_array_t(int*)      ar;
+
+    gpr_pool_allocator_init(&pa, 4, 100, gpr_default_allocator);
+    gpr_array_init(int*, &ar, gpr_default_allocator);
+    {
+      int i;
+      for (i=0; i<150; ++i) {
+        gpr_array_push_back(int*, &ar, 
+          (int*)gpr_allocate(a, sizeof(int)));
+      }
+
+      gpr_allocate(a, 2*1024);
+
+      for (i=0; i<150; ++i) gpr_deallocate(a, gpr_array_item(&ar, i));
+    }
+    gpr_allocate(a, 2*1024);
+    gpr_pool_allocator_destroy(a);
   }
   gpr_memory_shutdown();
 }
@@ -329,6 +361,7 @@ void test_json()
 
   gpr_json_set_integer(&jsn, entity, "x", 10);
   gpr_json_set_integer(&jsn, entity, "y", 20);
+  gpr_json_set_string(&jsn, entity, "desc", "this is a edscription string");
   {
     U64 matrix = gpr_json_create_object(&jsn, entity, "matrix3");
     //U64 mx = gpr_json_create_array(&jsn, matrix, "x");
@@ -356,12 +389,13 @@ int main()
   //test_memory();
   //test_scratch();
   //test_tmp_allocator();
+  test_pool_allocator();
   //test_array();
   //test_idlut();
   //test_hash();
   //test_multi_hash();
   //test_murmur_hash();
   //test_tree();
-  test_json();
+  //test_json();
   return 0;
 }

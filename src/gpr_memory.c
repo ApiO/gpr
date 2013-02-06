@@ -33,7 +33,7 @@ U32 gpr_allocated_for(gpr_allocator_t *a, void *p)
   return a->allocated_for(a,p);
 }
 
-char *gpr_strdup(char *str, gpr_allocator_t *a)
+char *gpr_strdup(const char *str, gpr_allocator_t *a)
 {
   U32 i = 0;
   char *res;

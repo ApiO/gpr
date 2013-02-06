@@ -24,6 +24,7 @@
     <ClInclude Include="include\gpr_tmp_allocator.h" />
     <ClInclude Include="include\gpr_tree.h" />
     <ClInclude Include="include\gpr_types.h" />
+    <ClInclude Include="include\gpr_pool_allocator.h" />
     <ClInclude Include="src\tinycthread.h" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ClCompile Include="src\gpr_json.c" />
     <ClCompile Include="src\gpr_memory.c" />
     <ClCompile Include="src\gpr_murmur_hash.c" />
+    <ClCompile Include="src\gpr_pool_allocator.c" />
     <ClCompile Include="src\gpr_tmp_allocator.c" />
     <ClCompile Include="src\gpr_tree.c" />
     <ClCompile Include="src\test.c" />

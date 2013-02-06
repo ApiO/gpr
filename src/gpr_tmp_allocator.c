@@ -2,7 +2,7 @@
 
 #define GPR_CHUNK_SIZE 4*1024
 
-void *tmp_allocate(void *a, U32 size, U32 align)
+static void *allocate(void *a, U32 size, U32 align)
 {
   void *result = 0;
   gpr_tmp_allocator_64_t *al = (gpr_tmp_allocator_64_t*) a;
@@ -28,9 +28,9 @@ void *tmp_allocate(void *a, U32 size, U32 align)
   return result;
 }
 
-void tmp_deallocate    (void *a, void *p) {}
-U32  tmp_allocated_for (void *a, void *p) { return GPR_SIZE_NOT_TRACKED; }
-U32  tmp_allocated_tot (void *a)          { return GPR_SIZE_NOT_TRACKED; }
+static void deallocate    (void *a, void *p) {}
+static U32  allocated_for (void *a, void *p) { return GPR_SIZE_NOT_TRACKED; }
+static U32  allocated_tot (void *a)          { return GPR_SIZE_NOT_TRACKED; }
 
 void gpr_tmp_allocator_init(void *a, U32 size)
 {
@@ -43,10 +43,10 @@ void gpr_tmp_allocator_init(void *a, U32 size)
   al->backing    = gpr_scratch_allocator;
 
   gpr_set_allocator_functions(al,
-    tmp_allocate,
-    tmp_deallocate,
-    tmp_allocated_for,
-    tmp_allocated_tot);
+    allocate,
+    deallocate,
+    allocated_for,
+    allocated_tot);
 }
 
 void gpr_tmp_allocator_destroy (void *a)
