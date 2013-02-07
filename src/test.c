@@ -134,7 +134,7 @@ void test_tmp_allocator()
 }
 
 // ---------------------------------------------------------------
-// Temporary allocator test
+// Pool allocator test
 // ---------------------------------------------------------------
 
 void test_pool_allocator()
@@ -143,22 +143,23 @@ void test_pool_allocator()
   {
     gpr_pool_allocator_t  pa;
     gpr_allocator_t      *a = (gpr_allocator_t*)&pa;
-    gpr_array_t(int*)      ar;
+    gpr_array_t(int*)     ar;
 
     gpr_pool_allocator_init(&pa, 4, 100, gpr_default_allocator);
     gpr_array_init(int*, &ar, gpr_default_allocator);
     {
       int i;
-      for (i=0; i<150; ++i) {
-        gpr_array_push_back(int*, &ar, 
-          (int*)gpr_allocate(a, sizeof(int)));
-      }
+      for (i=0; i<150; ++i)
+        gpr_array_push_back(int*, &ar, (int*)gpr_allocate(a, sizeof(int)));
 
-      gpr_allocate(a, 2*1024);
-
-      for (i=0; i<150; ++i) gpr_deallocate(a, gpr_array_item(&ar, i));
+      for (i=0; i<150; ++i) 
+        gpr_deallocate(a, gpr_array_item(&ar, i));
     }
-    gpr_allocate(a, 2*1024);
+    gpr_array_destroy(&ar);
+    {
+      void *p = gpr_allocate(a, 2*1024);
+      gpr_deallocate(a, p);
+    }
     gpr_pool_allocator_destroy(a);
   }
   gpr_memory_shutdown();
@@ -386,16 +387,16 @@ void test_json()
 
 int main()
 {
-  //test_memory();
-  //test_scratch();
-  //test_tmp_allocator();
+  test_memory();
+  test_scratch();
+  test_tmp_allocator();
   test_pool_allocator();
-  //test_array();
-  //test_idlut();
-  //test_hash();
-  //test_multi_hash();
-  //test_murmur_hash();
-  //test_tree();
+  test_array();
+  test_idlut();
+  test_hash();
+  test_multi_hash();
+  test_murmur_hash();
+  test_tree();
   //test_json();
   return 0;
 }

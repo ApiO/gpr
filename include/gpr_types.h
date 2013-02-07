@@ -121,6 +121,8 @@ static U64 gpr_next_pow2_U64(U64 value)
   return value;
 }
 
+#define gpr_next_multiple(i, n) ((i + n-1)/n*n)
+
 // compiler shit & stuff
 
 #ifndef alignof
