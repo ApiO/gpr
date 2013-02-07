@@ -11,6 +11,7 @@
 #include "gpr_hash.h"
 #include "gpr_murmur_hash.h"
 #include "gpr_tree.h"
+#include "gpr_string_pool.h"
 #include "gpr_json.h"
 
 // ---------------------------------------------------------------

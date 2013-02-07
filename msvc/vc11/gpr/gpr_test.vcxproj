@@ -21,6 +21,7 @@
     <ClInclude Include="include\gpr_memory.h" />
     <ClInclude Include="include\gpr_murmur_hash.h" />
     <ClInclude Include="include\gpr_sort.h" />
+    <ClInclude Include="include\gpr_string_pool.h" />
     <ClInclude Include="include\gpr_tmp_allocator.h" />
     <ClInclude Include="include\gpr_tree.h" />
     <ClInclude Include="include\gpr_types.h" />

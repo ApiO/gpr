@@ -21,7 +21,7 @@ U32   gpr_allocated_for  (gpr_allocator_t *a, void*p);
 
 // allocate memory to store the string str and returns its pointer
 // must be freed with gpr_deallocate
-char *gpr_strdup(const char *str, gpr_allocator_t *a);
+char *gpr_strdup(gpr_allocator_t *a, const char *str);
 
 // global memory allocators
 extern gpr_allocator_t *gpr_default_allocator;
