@@ -9,6 +9,7 @@
 #include "gpr_buffer.h"
 #include "gpr_idlut.h"
 #include "gpr_hash.h"
+#include "gpr_string_pool.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +19,7 @@ typedef struct
 {
   gpr_idlut_t  nodes;
   gpr_hash_t   kv_access;
+  gpr_string_pool_t *sp;
 } gpr_json_t;
 
 typedef enum
@@ -44,10 +46,10 @@ typedef struct
   };
 } gpr_json_val;
 
-U64  gpr_json_init          (gpr_json_t *jsn, gpr_allocator_t *a);
+U64  gpr_json_init          (gpr_json_t *jsn, gpr_string_pool_t *sp, gpr_allocator_t *a);
 void gpr_json_destroy       (gpr_json_t *jsn);
 
-U64  gpr_json_parse         (gpr_json_t *jsn, const char *text);
+U64  gpr_json_parse         (gpr_json_t *jsn, U64 obj, const char *text);
 void gpr_json_write         (gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated);
 
 U64  gpr_json_create_object (gpr_json_t *jsn, U64 obj, const char *member);

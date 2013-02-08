@@ -352,33 +352,66 @@ void test_tree()
   gpr_memory_shutdown();
 }
 
+// ---------------------------------------------------------------
+// String pool test
+// ---------------------------------------------------------------
+
+void test_string_pool()
+{
+  gpr_string_pool_t sp;
+  char *s1, *s2;
+
+  gpr_memory_init(1024*4);
+  gpr_string_pool_init(&sp, gpr_default_allocator, gpr_default_allocator);
+
+  s1 = gpr_string_pool_get(&sp, "hello world!");
+  s2 = gpr_string_pool_get(&sp, "hello world!");
+
+  gpr_assert(s1 == s2);
+
+  gpr_string_pool_destroy(&sp);
+}
+
+// ---------------------------------------------------------------
+// JSON Test
+// ---------------------------------------------------------------
+
 void test_json()
 {
   gpr_buffer_t buf;
   gpr_json_t jsn;
+  gpr_string_pool_t sp;
+  gpr_pool_allocator_t pa;
   U64 entity;
 
   gpr_memory_init(1024*4);
-  entity = gpr_json_init(&jsn, gpr_default_allocator);
+  gpr_pool_allocator_init(&pa, 16, 256, gpr_default_allocator);
+  gpr_string_pool_init(&sp, gpr_default_allocator, (gpr_allocator_t*)&pa);
+
+  // ---------------------------------------------------------------
+  entity = gpr_json_init(&jsn, &sp, gpr_default_allocator);
 
   gpr_json_set_integer(&jsn, entity, "x", 10);
   gpr_json_set_integer(&jsn, entity, "y", 20);
-  gpr_json_set_string(&jsn, entity, "desc", "this is a edscription string");
+  gpr_json_set_string (&jsn, entity, "desc", "this is a edscription string");
   {
     U64 matrix = gpr_json_create_object(&jsn, entity, "matrix3");
-    //U64 mx = gpr_json_create_array(&jsn, matrix, "x");
-    //U64 my = gpr_json_create_array(&jsn, matrix, "y");
-    //U64 mz = gpr_json_create_array(&jsn, matrix, "z");
+    U64 mx = gpr_json_create_array(&jsn, matrix, "x");
+    U64 my = gpr_json_create_array(&jsn, matrix, "y");
+    U64 mz = gpr_json_create_array(&jsn, matrix, "z");
   }
   gpr_json_set_integer(&jsn, entity, "z", 666);
-  gpr_json_set_number(&jsn, entity, "z", 0.666);
+  gpr_json_set_number (&jsn, entity, "z", 0.666);
 
   gpr_buffer_init(&buf, gpr_default_allocator);
   gpr_json_write(&jsn, entity, &buf, 1);
   printf(buf.data);
+  // ---------------------------------------------------------------
 
   gpr_buffer_destroy(&buf);
   gpr_json_destroy(&jsn);
+  gpr_string_pool_destroy(&sp);
+  gpr_pool_allocator_destroy(&pa);
   gpr_memory_shutdown();
 }
 
@@ -398,6 +431,7 @@ int main()
   test_multi_hash();
   test_murmur_hash();
   test_tree();
-  //test_json();
+  test_string_pool();
+  test_json();
   return 0;
 }
