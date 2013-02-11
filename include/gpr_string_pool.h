@@ -55,13 +55,19 @@ static char *gpr_string_pool_get(gpr_string_pool_t *pool, const char *string)
   }
 }
 
+static I32 gpr_string_pool_has(gpr_string_pool_t *pool, const char *string)
+{
+  return gpr_hash_has(gpr_string_entry_t, &pool->string_map, 
+    gpr_murmur_hash_64(string, strlen(string), 0));
+}
+
 static void gpr_string_pool_release(gpr_string_pool_t *pool, char *string)
 {
   U64 key = gpr_murmur_hash_64(string, strlen(string), 0);
   gpr_string_entry_t *e = gpr_hash_get(gpr_string_entry_t, &pool->string_map, key);
 
   if(!e) return;
-  if(e->refs == 0) 
+  if(e->refs == 1) 
   {
     gpr_deallocate(pool->string_allocator, e->string);
     gpr_hash_remove(gpr_string_entry_t, &pool->string_map, key);

@@ -1,4 +1,5 @@
 #include <string.h>
+#include "gpr_assert.h"
 #include "gpr_json.h"
 #include "gpr_idlut.h"
 #include "gpr_murmur_hash.h"
@@ -27,7 +28,11 @@ static U64 create_node(gpr_json_t *jsn, const char *name,
     n.value.object = value;
 
   nid = gpr_idlut_add(node_t, &jsn->nodes, &n);
-  if(parent == NO_NODE) return nid;
+  if(type == GPR_JSON_ARRAY) 
+    gpr_idlut_lookup(node_t, &jsn->nodes, nid)->value.arr = nid;
+
+  if(parent == NO_NODE) 
+    return nid;
 
   if (name)
   {
@@ -50,8 +55,30 @@ static U64 create_node(gpr_json_t *jsn, const char *name,
   return nid;
 }
 
-static void remove_node(gpr_json_t *jsn, node_t *node)
+static void remove_node(gpr_json_t *jsn, U64 nid)
 {
+  node_t *n = gpr_idlut_lookup(node_t, &jsn->nodes, nid);
+
+  while(nid != NO_NODE)
+  {
+    switch (n->value.type)
+    {
+    case GPR_JSON_OBJECT:
+    case GPR_JSON_ARRAY:
+      remove_node(jsn, n->value.object);
+      break;
+    case GPR_JSON_STRING:
+      gpr_deallocate(jsn->sp->string_allocator, n->value.string);
+      break;
+    default:
+      break;
+    }
+    if(n->name) gpr_string_pool_release(jsn->sp, n->name);
+
+    n = gpr_idlut_lookup(node_t, &jsn->nodes, n->next);
+    gpr_idlut_remove    (node_t, &jsn->nodes, nid);
+    nid = n->next;
+  }
 }
 
 static void reset_node(gpr_json_t *jsn, node_t *node, gpr_json_type type, U64 value)
@@ -61,7 +88,7 @@ static void reset_node(gpr_json_t *jsn, node_t *node, gpr_json_type type, U64 va
   {
   case GPR_JSON_OBJECT:
   case GPR_JSON_ARRAY:
-    remove_node(jsn, gpr_idlut_lookup(node_t, &jsn->nodes, node->value.object));
+    remove_node(jsn, node->value.object);
     break;
   case GPR_JSON_STRING:
     gpr_deallocate(jsn->sp->string_allocator, node->value.string);
@@ -154,7 +181,7 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
     case GPR_JSON_ARRAY:
       gpr_buffer_cat (buf, "[");
       if(n->value.object != NO_NODE) 
-        write(jsn, n->value.arr, buf, formated, depth+1);
+        write(jsn, n->value.object, buf, formated, depth+1);
       gpr_buffer_cat(buf, "]");
       break;
 
@@ -197,7 +224,17 @@ gpr_json_val *gpr_json_get(gpr_json_t *jsn, U64 obj, const char *member)
 
 void gpr_json_remove(gpr_json_t *jsn, U64 obj, const char *member)
 {
+  remove_node(jsn, *gpr_hash_get(U64, &jsn->kv_access, 
+    gpr_murmur_hash_64(member, strlen(member), obj)));
+}
 
+void gpr_json_rename(gpr_json_t *jsn, U64 obj, const char *member)
+{
+  U64 key = gpr_murmur_hash_64(member, strlen(member), obj);
+  U64 *old = gpr_hash_get(U64, &jsn->kv_access, key);
+  if (old != NULL) remove_node(jsn, *old);
+
+  gpr_hash_set(U64, &jsn->kv_access, key, &obj);
 }
 
 void gpr_json_set(gpr_json_t *jsn, U64 obj, const char *member, gpr_json_type type, U64 value)
@@ -209,4 +246,59 @@ void gpr_json_set(gpr_json_t *jsn, U64 obj, const char *member, gpr_json_type ty
     reset_node(jsn, gpr_idlut_lookup(node_t, &jsn->nodes, *node_id), type, value);
   else 
     create_node(jsn, member, type, value, obj);
+}
+
+U32 gpr_json_array_size(gpr_json_t *jsn, U64 arr)
+{
+  U32 size = 0;
+  node_t *n = gpr_idlut_lookup(node_t, &jsn->nodes, arr);
+  if(n->value.object == NO_NODE) return 0;
+
+  n = gpr_idlut_lookup(node_t, &jsn->nodes, n->value.arr);
+  while(n->next != NO_NODE)
+  {
+    n = gpr_idlut_lookup(node_t, &jsn->nodes, n->next);
+    ++size;
+  }
+  return size;
+}
+
+static node_t *get_array_node(gpr_json_t *jsn, U64 arr, U32 i)
+{
+  U32 pos = 0;
+  node_t *n;
+  gpr_assert(gpr_json_array_size(jsn, arr) < i);
+
+  n = gpr_idlut_lookup(node_t, &jsn->nodes, n->value.arr);
+  while(pos < i++) n = gpr_idlut_lookup(node_t, &jsn->nodes, n->next);
+  return n;
+}
+
+gpr_json_val *gpr_json_array_get(gpr_json_t *jsn, U64 arr, U32 i)
+{
+  return &get_array_node(jsn, arr, i)->value;
+}
+
+void gpr_json_array_remove(gpr_json_t *jsn, U64 arr, U32 i)
+{
+  /*U64 nid;
+  node_t *first, *next;
+  if (i == 0)
+  {
+    first = gpr_idlut_lookup(node_t, &jsn->nodes, arr)->value.object;
+
+    gpr_idlut_remove(node_t, &jsn->nodes, n->value.arr);
+  }*/
+}
+
+void gpr_json_array_set(gpr_json_t *jsn, U64 arr, U32 i, 
+                        gpr_json_type type, U64 value)
+{
+  node_t *n = get_array_node(jsn, arr, i);
+  reset_node(jsn, n, type, value);
+}
+
+U64 gpr_json_array_add(gpr_json_t *jsn, U64 arr, gpr_json_type type, U64 value)
+{
+  return create_node(jsn, 0, type, value, arr);
 }

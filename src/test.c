@@ -354,7 +354,7 @@ void test_tree()
 
 // ---------------------------------------------------------------
 // String pool test
-// ---------------------------------------------------------------
+// --------------------------------------------------------------
 
 void test_string_pool()
 {
@@ -368,6 +368,11 @@ void test_string_pool()
   s2 = gpr_string_pool_get(&sp, "hello world!");
 
   gpr_assert(s1 == s2);
+  gpr_string_pool_release(&sp, "hello world!");
+  gpr_assert(strcmp(s2,"hello world!") == 0);
+  gpr_string_pool_release(&sp, "hello world!");
+  gpr_assert(!gpr_string_pool_has(&sp, "hello world!"));
+
 
   gpr_string_pool_destroy(&sp);
 }
@@ -399,6 +404,10 @@ void test_json()
     U64 mx = gpr_json_create_array(&jsn, matrix, "x");
     U64 my = gpr_json_create_array(&jsn, matrix, "y");
     U64 mz = gpr_json_create_array(&jsn, matrix, "z");
+    I32 values[] = {1,2,3};
+    gpr_json_array_add_integers(&jsn, mx, values, 3);
+    gpr_json_array_add_integers(&jsn, my, values, 3);
+    gpr_json_array_add_integers(&jsn, mz, values, 3);
   }
   gpr_json_set_integer(&jsn, entity, "z", 666);
   gpr_json_set_number (&jsn, entity, "z", 0.666);
@@ -421,7 +430,7 @@ void test_json()
 
 int main()
 {
-  test_memory();
+  /*test_memory();
   test_scratch();
   test_tmp_allocator();
   test_pool_allocator();
@@ -431,7 +440,7 @@ int main()
   test_multi_hash();
   test_murmur_hash();
   test_tree();
-  test_string_pool();
+  test_string_pool();*/
   test_json();
   return 0;
 }
