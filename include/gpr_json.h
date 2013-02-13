@@ -37,13 +37,17 @@ typedef enum
 typedef struct
 {
   I32 type;
-  U64 arr;
+  union {
+    U64 arr;
+    U64 object;
+  };
   union {
     I32   integer;
     F64   number;
     char *string;
-    U64   object;
+    U64   raw;
   };
+
 } gpr_json_val;
 
 U64  gpr_json_init          (gpr_json_t *jsn, gpr_string_pool_t *sp, gpr_allocator_t *a);

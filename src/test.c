@@ -398,16 +398,23 @@ void test_json()
 
   gpr_json_set_integer(&jsn, entity, "x", 10);
   gpr_json_set_integer(&jsn, entity, "y", 20);
-  gpr_json_set_string (&jsn, entity, "desc", "this is a edscription string");
+  gpr_json_set_string (&jsn, entity, "desc", "this is a description string");
   {
     U64 matrix = gpr_json_create_object(&jsn, entity, "matrix3");
     U64 mx = gpr_json_create_array(&jsn, matrix, "x");
     U64 my = gpr_json_create_array(&jsn, matrix, "y");
     U64 mz = gpr_json_create_array(&jsn, matrix, "z");
+
     I32 values[] = {1,2,3};
     gpr_json_array_add_integers(&jsn, mx, values, 3);
     gpr_json_array_add_integers(&jsn, my, values, 3);
     gpr_json_array_add_integers(&jsn, mz, values, 3);
+
+    gpr_assert(matrix == gpr_json_get(&jsn, entity, "matrix3")->object);
+    gpr_assert(mz     == gpr_json_get(&jsn, matrix, "z")->arr);
+
+    gpr_json_array_add_integer(&jsn, mz, 666);
+    gpr_assert(gpr_json_array_get(&jsn, mz, 3)->integer == 666);
   }
   gpr_json_set_integer(&jsn, entity, "z", 666);
   gpr_json_set_number (&jsn, entity, "z", 0.666);
