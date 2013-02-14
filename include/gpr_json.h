@@ -78,11 +78,11 @@ void gpr_json_set           (gpr_json_t *jsn, U64 obj, const char *member,
 
 U32  gpr_json_array_size         (gpr_json_t *jsn, U64 arr);
 gpr_json_val *gpr_json_array_get (gpr_json_t *jsn, U64 arr, U32 i);
-void gpr_json_array_remove       (gpr_json_t *jsn, U64 arr, U32 i);
-void gpr_json_array_set          (gpr_json_t *jsn, U64 arr, U32 i, 
-                                  gpr_json_type type, U64 value);
 U64  gpr_json_array_add          (gpr_json_t *jsn, U64 arr, 
                                   gpr_json_type type, U64 value);
+void gpr_json_array_set          (gpr_json_t *jsn, U64 arr, U32 i, 
+                                  gpr_json_type type, U64 value);
+void gpr_json_array_remove       (gpr_json_t *jsn, U64 arr, U32 i);
 
 #define gpr_json_array_add_object(jsn,arr)    gpr_json_array_add(jsn,arr,GPR_JSON_OBJECT,  0)
 #define gpr_json_array_add_array(jsn,arr)     gpr_json_array_add(jsn,arr,GPR_JSON_ARRAY,   0)

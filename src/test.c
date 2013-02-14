@@ -414,14 +414,24 @@ void test_json()
     gpr_assert(mz     == gpr_json_get(&jsn, matrix, "z")->arr);
 
     gpr_json_array_add_integer(&jsn, mz, 666);
+    gpr_assert(gpr_json_array_size(&jsn, mz) == 4);
     gpr_assert(gpr_json_array_get(&jsn, mz, 3)->integer == 666);
+
+    gpr_json_array_remove(&jsn, mz, 3);
+    gpr_assert(gpr_json_array_size(&jsn, mz) == 3);
+    
+    gpr_json_remove(&jsn, matrix, "z");
+    gpr_assert(!gpr_json_has(&jsn, matrix, "z"));
+
+    gpr_json_set_integer(&jsn, entity, "z", 666);
+    gpr_json_set_number (&jsn, entity, "z", 0.666);
   }
-  gpr_json_set_integer(&jsn, entity, "z", 666);
-  gpr_json_set_number (&jsn, entity, "z", 0.666);
+
 
   gpr_buffer_init(&buf, gpr_default_allocator);
   gpr_json_write(&jsn, entity, &buf, 1);
   printf(buf.data);
+
   // ---------------------------------------------------------------
 
   gpr_buffer_destroy(&buf);
