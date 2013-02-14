@@ -1,81 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Private Header Files">
-      <UniqueIdentifier>{54551cb2-675a-401c-ae0c-6afb3281000c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Public Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
+    <ClCompile Include="src\gpr_buffer.c" />
+    <ClCompile Include="src\gpr_hash.c" />
+    <ClCompile Include="src\gpr_idlut.c" />
+    <ClCompile Include="src\gpr_memory.c" />
+    <ClCompile Include="src\gpr_murmur_hash.c" />
+    <ClCompile Include="src\gpr_tmp_allocator.c" />
+    <ClCompile Include="src\tinycthread.c" />
+    <ClCompile Include="src\gpr_json.c" />
+    <ClCompile Include="src\gpr_pool_allocator.c" />
+    <ClCompile Include="src\gpr_tree.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\tinycthread.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gpr_memory.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gpr_tmp_allocator.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gpr_buffer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gpr_hash.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gpr_idlut.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gpr_murmur_hash.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\tinycthread.h">
-      <Filter>Private Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_assert.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_memory.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_idlut.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_types.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_allocator.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_array.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_tmp_allocator.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_hash.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_buffer.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gpr_murmur_hash.h">
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
-<<<<<<< local
-    <ClInclude Include="include\gpr_sort.h">
-=======
-    <ClInclude Include="include\gpr_math.h">
->>>>>>> other
-      <Filter>Public Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="include\gpr_allocator.h" />
+    <ClInclude Include="include\gpr_array.h" />
+    <ClInclude Include="include\gpr_assert.h" />
+    <ClInclude Include="include\gpr_buffer.h" />
+    <ClInclude Include="include\gpr_hash.h" />
+    <ClInclude Include="include\gpr_idlut.h" />
+    <ClInclude Include="include\gpr_math.h" />
+    <ClInclude Include="include\gpr_memory.h" />
+    <ClInclude Include="include\gpr_murmur_hash.h" />
+    <ClInclude Include="include\gpr_sort.h" />
+    <ClInclude Include="include\gpr_tmp_allocator.h" />
+    <ClInclude Include="include\gpr_types.h" />
+    <ClInclude Include="src\tinycthread.h" />
+    <ClInclude Include="include\gpr_json.h" />
+    <ClInclude Include="include\gpr_pool_allocator.h" />
+    <ClInclude Include="include\gpr_string_pool.h" />
+    <ClInclude Include="include\gpr_tree.h" />
   </ItemGroup>
 </Project>

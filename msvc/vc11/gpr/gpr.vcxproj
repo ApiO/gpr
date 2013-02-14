@@ -17,11 +17,15 @@
     <ClInclude Include="include\gpr_buffer.h" />
     <ClInclude Include="include\gpr_hash.h" />
     <ClInclude Include="include\gpr_idlut.h" />
+    <ClInclude Include="include\gpr_json.h" />
     <ClInclude Include="include\gpr_math.h" />
     <ClInclude Include="include\gpr_memory.h" />
     <ClInclude Include="include\gpr_murmur_hash.h" />
+    <ClInclude Include="include\gpr_pool_allocator.h" />
     <ClInclude Include="include\gpr_sort.h" />
+    <ClInclude Include="include\gpr_string_pool.h" />
     <ClInclude Include="include\gpr_tmp_allocator.h" />
+    <ClInclude Include="include\gpr_tree.h" />
     <ClInclude Include="include\gpr_types.h" />
     <ClInclude Include="src\tinycthread.h" />
   </ItemGroup>
@@ -29,9 +33,12 @@
     <ClCompile Include="src\gpr_buffer.c" />
     <ClCompile Include="src\gpr_hash.c" />
     <ClCompile Include="src\gpr_idlut.c" />
+    <ClCompile Include="src\gpr_json.c" />
     <ClCompile Include="src\gpr_memory.c" />
     <ClCompile Include="src\gpr_murmur_hash.c" />
+    <ClCompile Include="src\gpr_pool_allocator.c" />
     <ClCompile Include="src\gpr_tmp_allocator.c" />
+    <ClCompile Include="src\gpr_tree.c" />
     <ClCompile Include="src\tinycthread.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
