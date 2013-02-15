@@ -419,7 +419,7 @@ void test_json()
 
     gpr_json_array_remove(&jsn, mz, 3);
     gpr_assert(gpr_json_array_size(&jsn, mz) == 3);
-    
+
     gpr_json_remove(&jsn, matrix, "z");
     gpr_assert(!gpr_json_has(&jsn, matrix, "z"));
 
