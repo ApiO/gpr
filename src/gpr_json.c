@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 #include "gpr_json_read.h"
 #include "gpr_json_write.h"
@@ -6,6 +7,7 @@
 #include "gpr_assert.h"
 #include "gpr_idlut.h"
 #include "gpr_murmur_hash.h"
+#include "gpr_buffer.h"
 
 #define NO_NODE 0xffffffffu
 
@@ -176,8 +178,12 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
     if(formated) 
     {
       int i = 0;
-      if(n->name) gpr_buffer_cat(buf, "\n");
-      while(i++ < depth) gpr_buffer_cat(buf, "  ");
+      if(n->name) {
+        gpr_buffer_cat(buf, "\n");
+        while(i++ < depth) gpr_buffer_cat(buf, "  ");
+      } else {
+        gpr_buffer_cat(buf, " ");
+      }
     }
 
     if(n->name) 
@@ -195,13 +201,11 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
     case GPR_JSON_NULL:    gpr_buffer_cat (buf, "null");  break;
     case GPR_JSON_INTEGER: gpr_buffer_xcat(buf, "%d", n->value.integer); break;
     case GPR_JSON_NUMBER:  gpr_buffer_xcat(buf, "%f", n->value.number);  break;
-
     case GPR_JSON_STRING:
       gpr_buffer_cat(buf, "\"");
       gpr_buffer_cat (buf, n->value.string);
       gpr_buffer_cat(buf, "\"");
       break;
-
     case GPR_JSON_OBJECT:  
       gpr_buffer_cat (buf, "{");
       if(n->child != NO_NODE) 
@@ -214,14 +218,12 @@ static void write(gpr_json_t *jsn, U64 obj, gpr_buffer_t *buf, I32 formated, I32
       }
       gpr_buffer_cat(buf, "}");
       break;
-
     case GPR_JSON_ARRAY:
       gpr_buffer_cat (buf, "[");
       if(n->child != NO_NODE) 
         write(jsn, n->child, buf, formated, depth+1);
       gpr_buffer_cat(buf, "]");
       break;
-
     default: break;
     }
     nid = n->next;
@@ -320,18 +322,6 @@ U64 gpr_json_array_set(gpr_json_t *jsn, U64 arr, U32 i,
   return id;
 }
 
-static I32 parse_string(const char *text, U32 *pos, U32 *len)
-{
-  *len = 0;
-  while(text[*pos] != '\0')
-  {
-    if(text[*pos] == '\"') return 1;
-    ++*pos;
-    ++*len;
-  }
-  return 0;
-}
-
 static U64 get_parent(gpr_json_t *jsn, U64 id)
 {
   node_t *n = gpr_idlut_lookup(node_t, &jsn->nodes, id);
@@ -344,12 +334,43 @@ static U64 get_parent(gpr_json_t *jsn, U64 id)
   } return n->value.object;
 }
 
+static I32 string_len(const char *text, U32 *pos, U32 *len)
+{
+  *len = 0;
+  while(text[*pos] != '\0')
+  {
+    if(text[*pos] == '\"') return 1;
+    ++*pos; ++*len;
+  }
+  return 0;
+}
+
+static I32 primitive_len(const char *text, U32 *pos, U32 *len)
+{
+  *len = 0;
+  while(text[*pos] != '\0')
+  {
+    switch (text[*pos])
+    {
+    case '\t' : case '\r' : case '\n' : case ' ' : 
+    case  ',' : case  ']' : case  '}' : 
+      --*pos;
+      return 1;
+    default: break;
+    }
+    ++*pos; ++*len;
+  }
+  return 0;
+}
+
 I32 gpr_json_parse(gpr_json_t *jsn, U64 obj, const char *text)
 {
   U32 pos;
-  I32 name_expected = 1, in_array = 0;
-  char *name; 
-  U32 name_len;
+  I32 name_expected = 1, in_array = 0, root = 1;
+  char *name, *val; 
+  U32 name_len, val_len;
+  gpr_buffer_t pbuf;
+  gpr_buffer_init(&pbuf, jsn->sp->string_allocator);
 
   for(pos = 0; text[pos] != '\0'; pos++)
   {
@@ -361,38 +382,65 @@ I32 gpr_json_parse(gpr_json_t *jsn, U64 obj, const char *text)
       if(name_expected)
       {
         name = (char*)&text[++pos];
-        if(!parse_string(text, &pos, &name_len)) return 0;
+        if(!string_len(text, &pos, &name_len)) goto error;
         name_expected = 0;
       } else {
-        char *str = (char*)&text[++pos];
-        U32   str_len;
-        if(!parse_string(text, &pos, &str_len)) return 0;
-        create_node(jsn, name, name_len, GPR_JSON_STRING, (U64)str, str_len, obj);
+        val = (char*)&text[++pos];
+        if(!string_len(text, &pos, &val_len)) goto error;
+        create_node(jsn, name, name_len, GPR_JSON_STRING, (U64)val, val_len, obj);
         if(!in_array) name_expected = 1;
       } break;
-    case '{': 
-      if(name_expected) return 0;
+    case '{':
+      if(root) { root = 0; break; }
+      if(name_expected) goto error;
       obj = create_node(jsn, name, name_len, GPR_JSON_OBJECT, 0, 0, obj);
       name_expected = 1;
       break;
     case '[': 
-      if(name_expected) return 0;
+      if(name_expected) goto error;
       obj = create_node(jsn, name, name_len, GPR_JSON_ARRAY, 0, 0, obj);
       name_expected = 0;
+      name          = 0;
+      name_len      = 0;
       in_array      = 1;
       break;
     case '}': case ']':
-      if(name_expected) return 0;
       obj = get_parent(jsn, obj);
+      if(obj == NO_NODE) goto succeed;
       in_array = gpr_idlut_lookup(node_t, &jsn->nodes, obj)
         ->value.type == GPR_JSON_ARRAY;
       name_expected = !in_array;
       break;
     default:
-      if(name_expected) return 0;
-      // create node
+      if(name_expected) goto error;
+      val = (char*)&text[pos];
+      if(!primitive_len(text, &pos, &val_len)) goto error;
+      gpr_buffer_ncat(&pbuf, val, val_len);
+
+      if(strncmp(pbuf.data, "true", sizeof("true")) == 0)
+        create_node(jsn, name, name_len, GPR_JSON_TRUE, 0, 0, obj);
+      else if(strncmp(pbuf.data, "false", sizeof("false")) == 0)
+        create_node(jsn, name, name_len, GPR_JSON_FALSE, 0, 0, obj);
+      else if(strncmp(pbuf.data, "null", sizeof("null")) == 0)
+        create_node(jsn, name, name_len, GPR_JSON_NULL, 0, 0, obj);
+      else if(strchr(pbuf.data, '.') != NULL)
+      {
+        union{U64 asU64; F64 asF64;} u;
+        u.asF64 = atof(pbuf.data);
+        create_node(jsn, name, name_len, GPR_JSON_NUMBER, u.asU64, 0, obj);
+      }
+      else
+        create_node(jsn, name, name_len, GPR_JSON_INTEGER, atoi(pbuf.data), 0, obj);
+
+      gpr_buffer_clear(&pbuf);
       if(!in_array) name_expected = 1;
       break;
     }
   }
+succeed:
+  gpr_buffer_destroy(&pbuf);
+  return 1;
+error : 
+  gpr_buffer_destroy(&pbuf);
+  return 0;
 }

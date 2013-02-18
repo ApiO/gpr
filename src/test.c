@@ -385,7 +385,7 @@ void test_string_pool()
 
 void test_json()
 {
-  gpr_buffer_t buf;
+  gpr_buffer_t buf, buf2;
   gpr_json_t jsn;
   gpr_string_pool_t sp;
   gpr_pool_allocator_t pa;
@@ -429,10 +429,23 @@ void test_json()
     gpr_json_set_number (&jsn, entity, "z", 0.666);
   }
 
-
   gpr_buffer_init(&buf, gpr_default_allocator);
   gpr_json_write(&jsn, entity, &buf, 1);
   printf(buf.data);
+  printf("\r\n");
+  {
+    gpr_json_t jsn2;
+    U64 jroot = gpr_json_init(&jsn2, &sp, gpr_default_allocator);
+    gpr_assert(gpr_json_parse(&jsn2, jroot, buf.data));
+
+    gpr_buffer_init(&buf2, gpr_default_allocator);
+    gpr_json_write(&jsn2, jroot, &buf2, 1);
+    gpr_assert(strncmp(buf.data, buf2.data, buf.size) == 0);
+
+    printf(buf.data);
+    gpr_buffer_destroy(&buf2);
+    gpr_json_destroy(&jsn2);
+  }
 
   // ---------------------------------------------------------------
 
