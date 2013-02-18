@@ -37,9 +37,9 @@ static void  gpr_string_pool_destroy(gpr_string_pool_t *pool)
   gpr_hash_destroy(gpr_string_entry_t, &pool->string_map);
 }
 
-static char *gpr_string_pool_get(gpr_string_pool_t *pool, const char *string)
+static char *gpr_string_pool_nget(gpr_string_pool_t *pool, const char *string, U32 size)
 {
-  U64 key = gpr_murmur_hash_64(string, strlen(string), 0);
+  U64 key = gpr_murmur_hash_64(string, size, 0);
   gpr_string_entry_t *e = gpr_hash_get(gpr_string_entry_t, &pool->string_map, key);
 
   if(e) 
@@ -53,6 +53,11 @@ static char *gpr_string_pool_get(gpr_string_pool_t *pool, const char *string)
     gpr_hash_set(gpr_string_entry_t, &pool->string_map, key, &ne);
     return ne.string;
   }
+}
+
+static char *gpr_string_pool_get(gpr_string_pool_t *pool, const char *string)
+{
+  return gpr_string_pool_nget(pool, string, strlen(string));
 }
 
 static I32 gpr_string_pool_has(gpr_string_pool_t *pool, const char *string)

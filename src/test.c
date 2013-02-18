@@ -12,7 +12,9 @@
 #include "gpr_murmur_hash.h"
 #include "gpr_tree.h"
 #include "gpr_string_pool.h"
-#include "gpr_json.h"
+#include "gpr_json_read.h"
+#include "gpr_json_write.h"
+
 
 // ---------------------------------------------------------------
 // Default allocator tests
