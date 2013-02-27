@@ -7,19 +7,21 @@ typedef struct
 {
   F32 x, y;
 } Vector2;
-typedef Vector2 Point2;
+
+typedef struct
+{
+  Vector2 a, b;
+} AABB;
 
 typedef struct
 {
   F32 x, y, z;
 } Vector3;
-typedef Vector3 Point3;
 
 typedef struct
 {
   F32 x, y, z, w;
 } Vector4;
-typedef Vector3 Point3;
 
 typedef struct
 {

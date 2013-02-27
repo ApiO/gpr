@@ -18,6 +18,8 @@
     <ClInclude Include="include\gpr_hash.h" />
     <ClInclude Include="include\gpr_idlut.h" />
     <ClInclude Include="include\gpr_json.h" />
+    <ClInclude Include="include\gpr_json_read.h" />
+    <ClInclude Include="include\gpr_json_write.h" />
     <ClInclude Include="include\gpr_math.h" />
     <ClInclude Include="include\gpr_memory.h" />
     <ClInclude Include="include\gpr_murmur_hash.h" />

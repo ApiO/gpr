@@ -30,5 +30,7 @@
     <ClInclude Include="include\gpr_pool_allocator.h" />
     <ClInclude Include="include\gpr_string_pool.h" />
     <ClInclude Include="include\gpr_tree.h" />
+    <ClInclude Include="include\gpr_json_read.h" />
+    <ClInclude Include="include\gpr_json_write.h" />
   </ItemGroup>
 </Project>
